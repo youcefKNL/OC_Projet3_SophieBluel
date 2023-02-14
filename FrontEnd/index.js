@@ -45,48 +45,51 @@ fetchApiCategories();
 
 function workDisplay() {
   const gallery = document.querySelector(".gallery");
-  let figure = document.createElement("figure");
-  let img = document.createElement("img");
-  //   img.src = cards[i].imageUrl;
-  //   img.alt = cards[i].title;
-  let figcaption = document.createElement("figcaption");
-  //   figcaption.textContent = cards[i].title;
-
-  figure.appendChild(img);
-  figure.appendChild(figcaption);
-  gallery.appendChild(figure);
-  //   gallery.innerHTML = cards.map(
-  //     (card) =>
-  //       `<figure>
-  //       <img src="${cards.imageUrl}"
-
-  //       </figure>`
-  //   );
+  gallery.innerHTML = cards
+    .filter(
+      (card) =>
+        //Si categoryIdValue est égal à "Tous", la première expression sera vraie, et toutes les cartes seront affichées.
+        //Si categoryIdValue n'est pas égal à "Tous", la seconde expression sera vraie pour les cartes ayant la bonne catégorie,
+        //et ces cartes seulement seront affichées.
+        categoryIdValue === "Tous" || card.category.name === categoryIdValue
+    )
+    .map(
+      (card) =>
+        `<figure>
+        <img src="${card.imageUrl}">
+        <figcaption> ${card.title}<figcaption>
+        </figure>`
+    )
+    .join("");
 }
 
 // *****************************************************************************************************
 //Logique clique
-let categoryId;
-let cardWork;
+let categoryIdValue;
+
 btnSort.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    categoryId = e.target.textContent;
-    switch (categoryId) {
+    categoryIdValue = e.target.textContent;
+
+    switch (categoryIdValue) {
       case "Tous":
         document.body.style.background = "black";
         break;
       case "Objets":
         document.body.style.background = "red";
+
         break;
       case "Appartements":
         document.body.style.background = "blue";
+
         break;
-      case "Hôtels& Restaurants":
+      case "Hotels & restaurants":
         document.body.style.background = "yellow";
         break;
       default:
         null;
     }
+    console.log(categoryIdValue);
     workDisplay();
   });
 });
