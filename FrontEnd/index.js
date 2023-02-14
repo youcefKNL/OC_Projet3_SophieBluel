@@ -1,19 +1,43 @@
-//Pointer les Filtres
-const btnSort = document.querySelectorAll(".btn");
-// console.log(btnSort);
-
-// *****************************************************************************************************
-// Fetcher api
-// Fetch la route Works
-
 // import { fetchApiCategories } from "./fetchApiWorks";
-
+// Fetcher api
 // Differentes routes:      /works    /categories    /users/login    /works/{id}
 const api = "http://localhost:5678/api/";
+//Pointer les Filtres
+const project = document.getElementById("portfolio");
+//Evenement au clik
+let categoryIdValue;
+//Récupere la data du fetch ApiWorks
+let cards = [];
 
+// *****************************************************************************************************
+//INJECTION BOUTON EN HTML   (#PORTFOLIO ->) DIV -> BUTTONS
+
+const categories = ["Tous", "Objets", "Appartements", "Hotels & restaurants"];
+
+const filterButtons = document.createElement("div");
+filterButtons.classList.add("filter");
+
+categories.forEach((category) => {
+  const button = document.createElement("button");
+  button.classList.add("btn");
+  button.textContent = category;
+  filterButtons.appendChild(button);
+  project.appendChild(filterButtons);
+});
+//Déclarer aprés la création sinon le script va trop vite si déclarer en haut
+const btnSort = document.querySelectorAll(".btn");
+const portfolioSection = document.querySelector("#portfolio");
+//Cette méthode insérera les boutons de filtre juste après l'élément h2.
+portfolioSection
+  .querySelector("h2")
+  .insertAdjacentElement("afterend", filterButtons);
+// filterButtons est l'élément HTML que l'on souhaite insérer
+//afterend signifie que l'élément doit être inséré juste après l'élément de référence.
+
+// *****************************************************************************************************
+// Fetch la route Works
 //Fetch cards appartenant à WORKS
 
-let cards = [];
 async function fetchApiWorks() {
   try {
     await fetch(api + "works")
@@ -21,27 +45,28 @@ async function fetchApiWorks() {
       .then((data) => (cards = data));
     console.log(cards);
   } catch (error) {
-    console.log(`Erreur chargement Fonction fetchApiWorks:  ${error}`);
+    console.log(
+      `Erreur chargement Fonction fetchApiWorks Cartes des Projets:  ${error}`
+    );
   }
 }
-fetchApiWorks();
 
 // Fetch cards appartenant à CATEGORIES
-let cardsCategories = [];
-async function fetchApiCategories() {
-  try {
-    await fetch(api + "categories")
-      .then((res) => res.json())
-      .then((data) => (cardsCategories = data));
-    console.log(cardsCategories);
-  } catch (error) {
-    console.log(`Erreur chargement Fonction fetchCategoriesWorks:  ${error}`);
-  }
-}
-fetchApiCategories();
+// let cardsCategories = [];
+// async function fetchApiCategories() {
+//   try {
+//     await fetch(api + "categories")
+//       .then((res) => res.json())
+//       .then((data) => (cardsCategories = data));
+//     console.log(cardsCategories);
+//   } catch (error) {
+//     console.log(`Erreur chargement Fonction fetchCategoriesWorks:  ${error}`);
+//   }
+// }
+// fetchApiCategories();
 
 // *****************************************************************************************************
-// INJECTION DES CARTES DANS LE HTML
+// LOGIQUE INJECTION DES CARTES DANS LE HTML
 
 function workDisplay() {
   const gallery = document.querySelector(".gallery");
@@ -56,7 +81,7 @@ function workDisplay() {
     .map(
       (card) =>
         `<figure>
-        <img src="${card.imageUrl}">
+        <img src="${card.imageUrl}" alt="photo de ${card.title}">
         <figcaption> ${card.title}<figcaption>
         </figure>`
     )
@@ -64,32 +89,18 @@ function workDisplay() {
 }
 
 // *****************************************************************************************************
-//Logique clique
-let categoryIdValue;
+//LOGIQUE CLIQUE pour récupérer le "name" du Button et la Class qui s'ajoute
 
 btnSort.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     categoryIdValue = e.target.textContent;
-
-    switch (categoryIdValue) {
-      case "Tous":
-        document.body.style.background = "black";
-        break;
-      case "Objets":
-        document.body.style.background = "red";
-
-        break;
-      case "Appartements":
-        document.body.style.background = "blue";
-
-        break;
-      case "Hotels & restaurants":
-        document.body.style.background = "yellow";
-        break;
-      default:
-        null;
-    }
+    btnSort.forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    e.target.classList.add("active");
     console.log(categoryIdValue);
     workDisplay();
   });
 });
+
+window.addEventListener("load", fetchApiWorks);
