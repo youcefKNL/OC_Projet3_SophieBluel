@@ -12,18 +12,21 @@ let cards = [];
 // *****************************************************************************************************
 //INJECTION BOUTON EN HTML   (#PORTFOLIO ->) DIV -> BUTTONS
 
-const categories = ["Tous", "Objets", "Appartements", "Hotels & restaurants"];
+const btnValue = ["Tous", "Objets", "Appartements", "Hotels & restaurants"];
+const btnTitle = ["Tous", "Objets", "Appartements", "Hôtels & Restaurants"];
 
 const filterButtons = document.createElement("div");
 filterButtons.classList.add("filter");
 
-categories.forEach((category) => {
+btnTitle.forEach((category, index) => {
   const button = document.createElement("button");
   button.classList.add("btn");
   button.textContent = category;
+  button.setAttribute("value", btnValue[index]);
   filterButtons.appendChild(button);
   project.appendChild(filterButtons);
 });
+
 //Déclarer aprés la création sinon le script va trop vite si déclarer en haut
 const btnSort = document.querySelectorAll(".btn");
 const portfolioSection = document.querySelector("#portfolio");
@@ -33,6 +36,9 @@ portfolioSection
   .insertAdjacentElement("afterend", filterButtons);
 // filterButtons est l'élément HTML que l'on souhaite insérer
 //afterend signifie que l'élément doit être inséré juste après l'élément de référence.
+
+//Ajouter la classe "active" au premier bouton
+filterButtons.firstElementChild.classList.add("active");
 
 // *****************************************************************************************************
 // Fetch la route Works
@@ -44,6 +50,7 @@ async function fetchApiWorks() {
       .then((res) => res.json())
       .then((data) => (cards = data));
     console.log(cards);
+    workDisplay();
   } catch (error) {
     console.log(
       `Erreur chargement Fonction fetchApiWorks Cartes des Projets:  ${error}`
@@ -66,7 +73,7 @@ async function fetchApiWorks() {
 // fetchApiCategories();
 
 // *****************************************************************************************************
-// LOGIQUE INJECTION DES CARTES DANS LE HTML
+// INJECTION DES CARTES DANS LE HTML
 
 function workDisplay() {
   const gallery = document.querySelector(".gallery");
@@ -103,4 +110,13 @@ btnSort.forEach((btn) => {
   });
 });
 
-window.addEventListener("load", fetchApiWorks);
+// *****************************************************************************************************
+//LOGIQUE AU CHARGEMENT DE LA PAGE
+
+window.addEventListener("load", () => {
+  fetchApiWorks();
+  categoryIdValue = "Tous";
+});
+
+// *****************************************************************************************************
+// LOGIQUE LOGIN
