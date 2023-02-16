@@ -31,13 +31,18 @@ async function loginUser() {
         console.log(data);
       });
     if (data.message === "user not found") {
-      loginError.textContent = "Email pas valide !!";
+      loginError.textContent = "Erreur dans l’identifiant !!";
+      inputEmail.style.color = "red";
       console.log(logUser);
     } else if (data.error) {
-      passwordError.textContent = "Password pas valide !!";
+      passwordError.textContent = "Erreur dans le mot de passe !!";
       loginError.textContent = "";
+      inputPassword.style.color = "red";
+      inputEmail.style.color = "#1d6154";
+
       console.log(logUser);
     } else {
+      inputPassword.style.color = "#1d6154";
       passwordError.textContent = "";
       loginError.textContent = "";
       console.log("LogAdmin OK");
@@ -81,3 +86,5 @@ document.addEventListener("DOMContentLoaded", () => {
   logUser.password = inputPassword.value;
   console.log(logUser);
 });
+
+document.querySelector("body > header > nav > ul > li.selectedMenu");
