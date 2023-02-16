@@ -11,19 +11,22 @@
         rel="stylesheet">
     <meta name="description" content="">
     <link rel="stylesheet" href="./assets/style.css">
-    <script defer src="./index.js"></script>
+    <script defer src="./login.js"></script>
+
 </head>
 
-<body>
+<body class="login">
 
 
     <header>
-        <h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+        <a href="./index.html">
+            <h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+        </a>
         <nav>
             <ul>
                 <li><a href="index.html#portfolio">projets</a></li>
                 <li><a href="index.html#contact">contact</a></li>
-                <li class="selected--menuitem">login</li>
+                <li class="selectedMenu">login</li>
                 <li>
                     <div src="./assets/icons/instagram.png" class="instagram" alt="Instagram"></div>
                 </li>
@@ -37,9 +40,7 @@
         <section id="contact">
             <h2>Log In</h2>
 
-
-
-            <form id="login__form">
+            <form id="loginForm">
 
                 <label for="email">E-mail</label>
                 <input type="email" name="email" id="email" placeholder="sophie.bluel@test.tld"
@@ -52,9 +53,11 @@
 
                 <input type="submit" value="Se connecter">
             </form>
-            <p class="forgot__password"><a href="#">Mot de passe oublié</a></p>
+            <p class="forgotPassword"><a href="#">Mot de passe oublié</a></p>
         </section>
+
     </main>
+
 
     <footer>
         <nav>
@@ -63,6 +66,7 @@
             </ul>
         </nav>
     </footer>
+
 </body>
 
 </html>

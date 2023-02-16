@@ -13,7 +13,7 @@ let cards = [];
 //INJECTION BOUTON EN HTML   (#PORTFOLIO ->) DIV -> BUTTONS
 
 const btnValue = ["Tous", "Objets", "Appartements", "Hotels & restaurants"];
-const btnTitle = ["Tous", "Objets", "Appartements", "Hôtels & Restaurants"];
+const btnTitle = ["Tous", "Objets", "Appartements", "Hôtels & restaurants"];
 
 const filterButtons = document.createElement("div");
 filterButtons.classList.add("filter");
@@ -100,7 +100,7 @@ function workDisplay() {
 
 btnSort.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    categoryIdValue = e.target.textContent;
+    categoryIdValue = e.target.value;
     btnSort.forEach((btn) => {
       btn.classList.remove("active");
     });
@@ -117,6 +117,3 @@ window.addEventListener("load", () => {
   fetchApiWorks();
   categoryIdValue = "Tous";
 });
-
-// *****************************************************************************************************
-// LOGIQUE LOGIN

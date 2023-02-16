@@ -303,3 +303,41 @@ footer nav ul {
   justify-content: flex-end;
   margin: 2em;
 }
+
+/* ********************************************************************* */
+.login {
+  height: 100vh;
+}
+.selectedMenu {
+  font-weight: bold;
+}
+form input,
+form textarea {
+  padding: 0 20px;
+}
+
+#email {
+  autocomplete: off;
+  color: #1d6154;
+  font-weight: bold;
+}
+.loginError {
+  margin-top: 15px;
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+.passwordError {
+  margin-top: 15px;
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+#password {
+  color: #1d6154;
+}
+.forgotPassword {
+  text-decoration: underline;
+}
