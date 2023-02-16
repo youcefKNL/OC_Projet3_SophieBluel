@@ -32,13 +32,20 @@ async function loginUser() {
       });
     if (data.message === "user not found") {
       loginError.textContent = "Email pas valide !!";
+      console.log(logUser);
     } else if (data.error) {
       passwordError.textContent = "Password pas valide !!";
       loginError.textContent = "";
+      console.log(logUser);
     } else {
       passwordError.textContent = "";
       loginError.textContent = "";
       console.log("LogAdmin OK");
+      console.log(logUser);
+      // stockage du token dans le stockage local
+      localStorage.setItem("token", data.token);
+      //Redirection index.html
+      window.location.href = "../index.html";
     }
   } catch (error) {
     console.log(error);

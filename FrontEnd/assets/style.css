@@ -305,11 +305,13 @@ footer nav ul {
 }
 
 /* ********************************************************************* */
+/* ************************ PAGE LOGIN *************************** */
 .login {
   height: 100vh;
 }
 .selectedMenu {
   font-weight: bold;
+  cursor: not-allowed;
 }
 form input,
 form textarea {
