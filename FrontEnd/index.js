@@ -136,13 +136,13 @@ window.addEventListener("load", () => {
 function checkToken() {
   // Vérifie si le token est présent dans le localStorage
   const token = localStorage.getItem("token");
-  if (token !== null) {
+  if (token) {
     // Le token est présent dans le localStorage
-    document.body.style.background = "red";
+    //document.body.style.background = "red";
     adminEdition();
   } else {
     // Le token n'est pas présent dans le localStorage
-    document.body.style.background = "yellow";
+    //document.body.style.background = "yellow";
   }
 }
 
@@ -157,66 +157,69 @@ function removeToken() {
 window.addEventListener("unload", removeToken);
 
 // *****************************************************************************************************
+// ***************************************  ADMIN EDITOR  **********************************************
 // *****************************************************************************************************
-// *****************************************************************************************************
-//ADMIN EDITOR
 
 //Injection Dom en Mode Admin
 
 function adminEdition() {
   //Créer le bandeau Admin Editor
+
   const flagEditor = document.createElement("div");
   flagEditor.classList.add("flagEditor");
   document
     .querySelector("body")
     .insertAdjacentElement("afterbegin", flagEditor);
 
-  flagEditor.innerHTML = `
-      <span class="projectRemove">
-        <i class="fa-regular fa-pen-to-square"></i>
-        Mode édition 
-      </span>
-      <button>publier les changements</button>
-  `;
+  const spanFlagEditor = document.createElement("span");
+  spanFlagEditor.classList.add("projectRemove");
+  spanFlagEditor.textContent = "Mode édition";
 
-  // Créer l'élément <i>
-  const editIcon = document.createElement("i");
-  editIcon.className = "fa-regular fa-pen-to-square";
+  //Créer Le SPAN avec le "i"
 
-  const p = document.createElement("p");
-  p.textContent = "Modifier";
+  const iconFlagEditor = document.createElement("i");
+  iconFlagEditor.className = "fa-regular fa-pen-to-square";
 
-  const span = document.createElement("span");
-  span.classList.add("sophieRemove");
+  // Insérer l'élément i avant le texte de span
+  spanFlagEditor.insertBefore(iconFlagEditor, spanFlagEditor.firstChild);
 
-  span.appendChild(editIcon);
-  span.appendChild(p);
+  const btnFlagEditor = document.createElement("button");
+  btnFlagEditor.textContent = "publier les changements";
 
+  flagEditor.appendChild(spanFlagEditor);
+  flagEditor.appendChild(btnFlagEditor);
+
+  //Pointage des position à injecter
   const figure = document.querySelector("#introduction figure");
   const titleProject = document.querySelector("#portfolio > h2");
 
-  // Insérer le premier span dans figure
-  figure.appendChild(span);
+  //clonage du Span au dessus! true = Mm enfant aussi
 
-  // Insérer le deuxième span après titleProject
-  titleProject.innerHTML += `
-    <span class="projectRemove">
-      <i class="fa-regular fa-pen-to-square"></i>
-      Modifier 
-    </span>
-  `;
+  const spanFigure = spanFlagEditor.cloneNode(true);
+  spanFigure.classList.remove("projectRemove");
+  spanFigure.classList.add("figureRemove");
+
+  const spanTitleProject = spanFlagEditor.cloneNode(true);
+  spanTitleProject.classList.remove("projectRemove");
+  spanTitleProject.classList.add("titleProjectRemove");
+
+  // INJECTION  SPAN
+
+  figure.appendChild(spanFigure);
+  titleProject.appendChild(spanTitleProject);
+
+  //Login -> Logout
+
+  document.querySelector(
+    "body > header > nav > ul > li:nth-child(3)"
+  ).innerHTML = `
+    <a href="./index.html">
+    logout
+    </a>
+    `;
 
   //Delete les filtres de Recherche
   filterButtons.remove();
-
-  //Login -> Logout
-  document.querySelector(
-    "body > header > nav > ul > li:nth-child(3) > a"
-  ).innerHTML = `
-        <a href="./index.html">
-          logout
-        </a>
-  `;
 }
 
 // *****************************************************************************************************

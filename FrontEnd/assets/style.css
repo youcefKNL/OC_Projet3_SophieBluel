@@ -301,6 +301,7 @@ input[type="submit"] {
   width: 180px;
   text-align: center;
   border-radius: 60px;
+  cursor: pointer;
 }
 footer {
   background-color: white;
@@ -364,25 +365,9 @@ form textarea {
   text-decoration: underline;
 }
 
-.sophieRemove {
-  display: flex;
-  flex-direction: row;
-  padding: 20px 10%;
-}
-.sophieRemove i {
-  padding-right: 20px;
-}
-
-.projectRemove {
-  font-family: "Work Sans";
-  font-weight: normal;
-  color: black;
-  font-size: 14px;
-  padding-left: 20px;
-}
-.projectRemove i {
-  padding-right: 10px;
-}
+/* ********************************************************************** */
+/* ************************ PAGE ADMIN EDITOR *************************** */
+/* bandeau noir Editor*/
 
 .flagEditor {
   display: flex;
@@ -392,11 +377,11 @@ form textarea {
   height: 80px;
   width: 100%;
 }
-.flagEditor span i {
+.fa-regular {
   color: white;
   font-size: 16px;
 }
-.flagEditor span {
+.projectRemove {
   color: white;
   font-size: 16px;
 }
@@ -409,4 +394,31 @@ form textarea {
   margin-left: 20px;
   outline: none;
   border: 2px solid black;
+}
+
+/* Editor sous photo */
+
+.figureRemove {
+  display: flex;
+  flex-direction: row;
+  padding: 20px 10%;
+  color: black;
+}
+.figureRemove i {
+  padding-right: 20px;
+  color: black;
+}
+
+/* Editor Project */
+
+.titleProjectRemove {
+  font-family: "Work Sans";
+  font-weight: normal;
+  color: black;
+  font-size: 14px;
+  padding-left: 20px;
+}
+.titleProjectRemove i {
+  padding-right: 10px;
+  color: black;
 }

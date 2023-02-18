@@ -86,5 +86,3 @@ document.addEventListener("DOMContentLoaded", () => {
   logUser.password = inputPassword.value;
   console.log(logUser);
 });
-
-document.querySelector("body > header > nav > ul > li.selectedMenu");
