@@ -447,9 +447,10 @@ form textarea {
   overflow: auto;
   width: 35%;
   min-width: 700px;
-  height: 700px;
+  min-height: 700px;
   border-radius: 10px;
   padding-top: 70px;
+  padding-bottom: 10px;
 }
 
 #closeModal {
@@ -465,7 +466,6 @@ form textarea {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  /* align-items: center; */
   height: 100%;
   margin: 0;
   padding: 0 15%;
@@ -483,10 +483,45 @@ form textarea {
   color: white;
 }
 #editionGallery {
+  height: 70%;
+}
+#modalGrid {
+  width: auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: 10px;
+  row-gap: 25px;
+}
+#modalGrid > div {
+  position: relative;
+}
+#modalGrid img {
+  width: 100%;
   height: 100%;
+  object-fit: cover;
+}
+
+#deleteIcon {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+}
+#deleteIcon:hover {
+  cursor: crosshair;
+}
+
+#moveIcon {
+  position: absolute;
+  top: 3px;
+  right: 23px;
+}
+#moveIcon:hover {
+  cursor: move;
 }
 #footerModal {
+  margin-top: 20px;
   text-align: center;
+  height: 30%;
 }
 #footerModal > input {
   width: 60%;

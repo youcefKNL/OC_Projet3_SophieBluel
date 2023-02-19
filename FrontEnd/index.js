@@ -229,11 +229,62 @@ function adminEdition() {
 
   const modalJs = document.getElementById("titleProjectRemove");
 
+  // async function openModal(e) {
+  //   e.preventDefault();
+  //   const target = "./assets/modal.html";
+  //   const response = await fetch(target);
+  //   const html = await response.text();
+
+  //   // Récupérer les liens des images
+  //   const imageLinks = cards.map((card) => card.picture);
+
+  //   // Créer un Set pour n'avoir que des liens uniques
+  //   const uniqueLinks = new Set(imageLinks);
+
+  //   // Générer le HTML pour les images
+  //   const imagesHtml = [...uniqueLinks]
+  //     .map((link) => `<img src="${link}" alt="">`)
+  //     .join("");
+
+  //   // Injection du HTML
+  //   const modal = document.createElement("div");
+  //   modal.classList.add("modal");
+  //   modal.innerHTML = `
+  //     <div class="modal__content">
+  //       ${imagesHtml}
+  //     </div>
+  //     <button class="modal__close">Fermer</button>
+  //   `;
+  //   document.body.appendChild(modal);
+  //   displayModal();
+  // }
+
   async function openModal(e) {
     e.preventDefault();
     const target = "./assets/modal.html";
     const response = await fetch(target);
     const html = await response.text();
+
+    // Récupérer les liens des images
+
+    const imagesUrl = await cards.map((card) => card.imageUrl);
+    //console.log(imagesUrl);
+
+    // Créer un Set pour n'avoir que des liens uniques
+    const imagesUrlSet = new Set(imagesUrl);
+    //console.log(imagesUrlSet);
+    // Générer le HTML pour les images
+    // const imagesHtml = [...imagesUrlSet]
+    //   .map(
+    //     (link) => `
+    //   <div>
+    //     <img src="${link}" alt="">
+    //     <p>éditer</p>
+    //   </div>
+    // `
+    //   )
+    //   .join("");
+
     //INJECTION DES ELEMENTS FETCHER
     const modal = document.createElement("div");
     modal.classList.add("modal");
@@ -241,19 +292,57 @@ function adminEdition() {
     // console.log(html);
     document.body.appendChild(modal);
     displayModal();
+
+    //INJECTIONS DES CARTES DS MODAL
+    const imageElements = [...imagesUrlSet].map((link, index) => {
+      const container = document.createElement("div");
+      const img = document.createElement("img");
+      const p = document.createElement("p");
+      const iconDelete = document.createElement("i");
+      // const iconMove = document.createElement("i");
+
+      // iconMove.id = "moveIcon";
+      // iconMove.classList.add(
+      //   "fa-solid",
+      //   "fa-arrows-up-down-left-right",
+      //   "iconModal"
+      // );
+
+      iconDelete.id = "deleteIcon";
+      iconDelete.classList.add("fa-solid", "fa-trash-can", "iconModal");
+
+      img.src = link;
+      img.alt = "";
+      p.textContent = "éditer";
+      container.appendChild(img);
+      container.appendChild(p);
+      container.appendChild(iconDelete);
+
+      // Ajouter l'icône de déplacement uniquement sur le premier élément
+      if (index === 0) {
+        const iconMove = document.createElement("i");
+        iconMove.id = "moveIcon";
+        iconMove.classList.add(
+          "fa-solid",
+          "fa-arrows-up-down-left-right",
+          "iconModal"
+        );
+        container.appendChild(iconMove);
+      }
+      return container;
+    });
+
+    const galleryMap = document.getElementById("modalGrid");
+    galleryMap.append(...imageElements);
   }
+
   modalJs.addEventListener("click", openModal);
   // *****************************************************************************************************
 
   function displayModal() {
     const closeModalBtn = document.querySelector("#closeModal");
-    console.log(closeModalBtn);
+    // console.log(closeModalBtn);
     closeModalBtn.addEventListener("click", closeModal);
-
-    function getWorksModal(cards) {
-      console.log(cards);
-      return [...new Set(cards.map((card) => card.category.name))];
-    }
   }
 
   function closeModal() {
