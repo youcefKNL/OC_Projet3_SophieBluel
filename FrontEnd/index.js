@@ -174,6 +174,8 @@ function adminEdition() {
   const spanFlagEditor = document.createElement("span");
   spanFlagEditor.classList.add("projectRemove");
   spanFlagEditor.textContent = "Mode édition";
+  //pour le ModalJS
+  //spanFlagEditor.classList.add("modalJs");
 
   //Créer Le SPAN avec le "i"
 
@@ -201,7 +203,7 @@ function adminEdition() {
 
   const spanTitleProject = spanFlagEditor.cloneNode(true);
   spanTitleProject.classList.remove("projectRemove");
-  spanTitleProject.classList.add("titleProjectRemove");
+  spanTitleProject.setAttribute("id", "titleProjectRemove");
 
   // INJECTION  SPAN
 
@@ -220,6 +222,44 @@ function adminEdition() {
 
   //Delete les filtres de Recherche
   filterButtons.remove();
-}
 
-// *****************************************************************************************************
+  //Open Modal
+
+  //Création du pont avec modal.html
+
+  const modalJs = document.getElementById("titleProjectRemove");
+
+  async function openModal(e) {
+    e.preventDefault();
+    const target = "./assets/modal.html";
+    const response = await fetch(target);
+    const html = await response.text();
+    //INJECTION DES ELEMENTS FETCHER
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
+    modal.innerHTML = html;
+    // console.log(html);
+    document.body.appendChild(modal);
+    displayModal();
+  }
+  modalJs.addEventListener("click", openModal);
+  // *****************************************************************************************************
+
+  function displayModal() {
+    const closeModalBtn = document.querySelector("#closeModal");
+    console.log(closeModalBtn);
+    closeModalBtn.addEventListener("click", closeModal);
+
+    function getWorksModal(cards) {
+      console.log(cards);
+      return [...new Set(cards.map((card) => card.category.name))];
+    }
+  }
+
+  function closeModal() {
+    const modal = document.querySelector(".modal");
+    modal.style.display = "none";
+    //Delete la div du DOM sinon un second apparait , le 1er se met en none
+    document.body.removeChild(modal);
+  }
+}

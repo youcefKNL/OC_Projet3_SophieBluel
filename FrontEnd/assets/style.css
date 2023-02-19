@@ -411,14 +411,89 @@ form textarea {
 
 /* Editor Project */
 
-.titleProjectRemove {
+#titleProjectRemove {
   font-family: "Work Sans";
   font-weight: normal;
   color: black;
   font-size: 14px;
   padding-left: 20px;
 }
-.titleProjectRemove i {
+#titleProjectRemove:hover {
+  cursor: pointer;
+}
+#titleProjectRemove i {
   padding-right: 10px;
   color: black;
+}
+
+/* ********************************************************************** */
+/* ************************ PAGE MODAL *************************** */
+
+.modal {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#modalContainer {
+  position: relative;
+  background-color: white;
+  overflow: auto;
+  width: 35%;
+  min-width: 700px;
+  height: 700px;
+  border-radius: 10px;
+  padding-top: 70px;
+}
+
+#closeModal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 1.5em;
+}
+#closeModal:hover {
+  cursor: pointer;
+}
+.modalTemplate {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* align-items: center; */
+  height: 100%;
+  margin: 0;
+  padding: 0 15%;
+}
+#modalTitle {
+  color: black;
+  text-align: center;
+  padding-bottom: 40px;
+}
+.iconModal {
+  display: inline-block;
+  font-size: 0.7em;
+  padding: 4px;
+  background-color: black;
+  color: white;
+}
+#editionGallery {
+  height: 100%;
+}
+#footerModal {
+  text-align: center;
+}
+#footerModal > input {
+  width: 60%;
+  text-align: center;
+  padding: 10px 45px;
+}
+#deleteAllWorks {
+  color: red;
+  margin-bottom: 40px;
 }
