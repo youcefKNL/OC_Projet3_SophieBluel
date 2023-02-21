@@ -492,7 +492,7 @@ form textarea {
   column-gap: 10px;
   row-gap: 25px;
 }
-#modalGrid > div {
+#modalGrid > figure {
   position: relative;
 }
 #modalGrid img {

@@ -63,6 +63,7 @@ async function loginUser() {
 // Evenement au Submit
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+  e.stopPropagation();
   loginUser();
 });
 
@@ -80,8 +81,9 @@ inputPassword.addEventListener("input", (e) => {
   logUser.password = e.target.value;
 });
 
-//Evenement au chargement du DOM
-document.addEventListener("DOMContentLoaded", () => {
+//Evenement au chargement du DOM**********************eeeeeeeeeeeeeeee
+document.addEventListener("DOMContentLoaded", (e) => {
+  e.preventDefault();
   logUser.email = inputEmail.value;
   logUser.password = inputPassword.value;
   console.log(logUser);

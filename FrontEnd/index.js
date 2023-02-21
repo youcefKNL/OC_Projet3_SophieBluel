@@ -1,4 +1,5 @@
 const api = "http://localhost:5678/api/";
+const token = localStorage.getItem("token");
 let categoryIdValue = "";
 //let cards = [];
 
@@ -82,9 +83,13 @@ function filtersBtn(btnTitle) {
 // *****************************************************************************************************
 //CORRECTION M => CREATION CARTES WORKS
 
+const imageUrls = [];
+
 function cardsTemplate(card) {
   const cardDisplay = document.createElement("figure");
-
+  // data set pour étape édition ds Modal
+  cardDisplay.setAttribute("data-card-id", card.id);
+  console.log(cardDisplay);
   // INJECTION DE MON IMAGE DS MA CARTE
 
   const imgCard = document.createElement("img");
@@ -123,7 +128,7 @@ function workDisplay() {
 
 //LOGIQUE AU CHARGEMENT DE LA PAGE
 
-window.addEventListener("load", () => {
+window.addEventListener("load", (e) => {
   fetchApiWorks();
   categoryIdValue = "Tous";
   checkToken();
@@ -134,14 +139,12 @@ window.addEventListener("load", () => {
 //Coté ADMINISTRATOR!!!
 
 function checkToken() {
-  // Vérifie si le token est présent dans le localStorage
+  // Vérifie si le token est dans le localStorage
   const token = localStorage.getItem("token");
   if (token) {
-    // Le token est présent dans le localStorage
     //document.body.style.background = "red";
     adminEdition();
   } else {
-    // Le token n'est pas présent dans le localStorage
     //document.body.style.background = "yellow";
   }
 }
@@ -154,7 +157,8 @@ function removeToken() {
 }
 
 //événement fermeture onglet ou redirection vers un autre site
-window.addEventListener("unload", removeToken);
+
+//window.addEventListener("unload", removeToken);
 
 // *****************************************************************************************************
 // ***************************************  ADMIN EDITOR  **********************************************
@@ -163,8 +167,7 @@ window.addEventListener("unload", removeToken);
 //Injection Dom en Mode Admin
 
 function adminEdition() {
-  //Créer le bandeau Admin Editor
-
+  //*************************************Créer le bandeau Admin Editor
   const flagEditor = document.createElement("div");
   flagEditor.classList.add("flagEditor");
   document
@@ -174,11 +177,8 @@ function adminEdition() {
   const spanFlagEditor = document.createElement("span");
   spanFlagEditor.classList.add("projectRemove");
   spanFlagEditor.textContent = "Mode édition";
-  //pour le ModalJS
-  //spanFlagEditor.classList.add("modalJs");
 
   //Créer Le SPAN avec le "i"
-
   const iconFlagEditor = document.createElement("i");
   iconFlagEditor.className = "fa-regular fa-pen-to-square";
 
@@ -210,82 +210,44 @@ function adminEdition() {
   figure.appendChild(spanFigure);
   titleProject.appendChild(spanTitleProject);
 
-  //Login -> Logout
+  //*************************************Login -> Logout
 
   document.querySelector(
     "body > header > nav > ul > li:nth-child(3)"
   ).innerHTML = `
-    <a href="./index.html">
-    logout
-    </a>
-    `;
+    <a href="./index.html" onclick="removeToken(); window.location.assign('./index.html')">logout</a>
+  `;
 
-  //Delete les filtres de Recherche
+  //*************************************Delete les filtres de Recherche
   filterButtons.remove();
 
-  //Open Modal
-
-  //Création du pont avec modal.html
-
+  //*************************************Open Modal
   const modalJs = document.getElementById("titleProjectRemove");
 
-  // async function openModal(e) {
-  //   e.preventDefault();
-  //   const target = "./assets/modal.html";
-  //   const response = await fetch(target);
-  //   const html = await response.text();
-
-  //   // Récupérer les liens des images
-  //   const imageLinks = cards.map((card) => card.picture);
-
-  //   // Créer un Set pour n'avoir que des liens uniques
-  //   const uniqueLinks = new Set(imageLinks);
-
-  //   // Générer le HTML pour les images
-  //   const imagesHtml = [...uniqueLinks]
-  //     .map((link) => `<img src="${link}" alt="">`)
-  //     .join("");
-
-  //   // Injection du HTML
-  //   const modal = document.createElement("div");
-  //   modal.classList.add("modal");
-  //   modal.innerHTML = `
-  //     <div class="modal__content">
-  //       ${imagesHtml}
-  //     </div>
-  //     <button class="modal__close">Fermer</button>
-  //   `;
-  //   document.body.appendChild(modal);
-  //   displayModal();
-  // }
-
-  async function openModal(e) {
+  modalJs.addEventListener("click", (e) => {
     e.preventDefault();
+    openModal();
+  });
+
+  async function openModal() {
     const target = "./assets/modal.html";
     const response = await fetch(target);
     const html = await response.text();
 
     // Récupérer les liens des images
 
-    const imagesUrl = await cards.map((card) => card.imageUrl);
+    //*************************************INJECTION DES ELEMENTS FETCHER
+    // const imagesUrl = await cards.map((card) => card.imageUrl);
+    const imagesUrl = [...document.querySelectorAll(".gallery img")].map(
+      (img) => img.getAttribute("src")
+    );
+
     //console.log(imagesUrl);
 
     // Créer un Set pour n'avoir que des liens uniques
     const imagesUrlSet = new Set(imagesUrl);
-    //console.log(imagesUrlSet);
-    // Générer le HTML pour les images
-    // const imagesHtml = [...imagesUrlSet]
-    //   .map(
-    //     (link) => `
-    //   <div>
-    //     <img src="${link}" alt="">
-    //     <p>éditer</p>
-    //   </div>
-    // `
-    //   )
-    //   .join("");
 
-    //INJECTION DES ELEMENTS FETCHER
+    //*************************************INJECTIONS DES CARTES DS MODAL
     const modal = document.createElement("div");
     modal.classList.add("modal");
     modal.innerHTML = html;
@@ -293,30 +255,56 @@ function adminEdition() {
     document.body.appendChild(modal);
     displayModal();
 
-    //INJECTIONS DES CARTES DS MODAL
     const imageElements = [...imagesUrlSet].map((link, index) => {
-      const container = document.createElement("div");
+      const container = document.createElement("figure");
       const img = document.createElement("img");
       const p = document.createElement("p");
       const iconDelete = document.createElement("i");
-      // const iconMove = document.createElement("i");
 
-      // iconMove.id = "moveIcon";
-      // iconMove.classList.add(
-      //   "fa-solid",
-      //   "fa-arrows-up-down-left-right",
-      //   "iconModal"
-      // );
-
+      // ajouter l'attribut data-card-id
+      container.setAttribute("data-card-id", cards[index].id);
       iconDelete.id = "deleteIcon";
       iconDelete.classList.add("fa-solid", "fa-trash-can", "iconModal");
-
       img.src = link;
       img.alt = "";
       p.textContent = "éditer";
       container.appendChild(img);
       container.appendChild(p);
       container.appendChild(iconDelete);
+
+      iconDelete.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const cardDelete = e.target.parentNode.getAttribute("data-card-id");
+        console.log(cardDelete);
+        deleteCard(cardDelete);
+      });
+      async function deleteCard(cardDelete) {
+        try {
+          if (token === false) return console.log({ error: "Pas connecté" });
+
+          const response = await fetch(`${api}works/${cardDelete}`, {
+            method: "DELETE",
+            headers: {
+              Accept: "*/*",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            // Supprimer la carte de la liste actuelle
+            // const cardElement = document.querySelector(
+            //   `[data-card-id="${cardDelete}"]`
+            // );
+            // if (cardElement) {
+            //   cardElement.remove();
+            //  }
+          } else {
+            throw new Error(response.statusText);
+          }
+        } catch (e) {
+          return `"Erreur= requête DELETE à l'API  :"${e}`;
+        }
+      }
 
       // Ajouter l'icône de déplacement uniquement sur le premier élément
       if (index === 0) {
@@ -329,26 +317,30 @@ function adminEdition() {
         );
         container.appendChild(iconMove);
       }
+
       return container;
     });
 
     const galleryMap = document.getElementById("modalGrid");
     galleryMap.append(...imageElements);
   }
-
-  modalJs.addEventListener("click", openModal);
   // *****************************************************************************************************
 
   function displayModal() {
+    const modal = document.querySelector("#modal");
     const closeModalBtn = document.querySelector("#closeModal");
     // console.log(closeModalBtn);
     closeModalBtn.addEventListener("click", closeModal);
-  }
-
-  function closeModal() {
-    const modal = document.querySelector(".modal");
-    modal.style.display = "none";
-    //Delete la div du DOM sinon un second apparait , le 1er se met en none
-    document.body.removeChild(modal);
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+    function closeModal() {
+      const modal = document.querySelector(".modal");
+      modal.style.display = "none";
+      //Delete la div du DOM sinon un second apparait , le 1er se met en none
+      document.body.removeChild(modal);
+    }
   }
 }
