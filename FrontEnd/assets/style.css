@@ -385,6 +385,9 @@ form textarea {
   color: white;
   font-size: 16px;
 }
+.projectRemove > i {
+  padding-right: 10px;
+}
 .flagEditor button {
   color: black;
   font-size: 14px;
@@ -394,6 +397,12 @@ form textarea {
   margin-left: 20px;
   outline: none;
   border: 2px solid black;
+  transition: 0.3s ease;
+}
+.flagEditor button:hover {
+  transform: scale(1.05);
+  color: white;
+  background: #1d6154;
 }
 
 /* Editor sous photo */
@@ -440,6 +449,9 @@ form textarea {
   height: 100%;
   background: rgba(0, 0, 0, 0.2);
 }
+.modalOpen {
+  overflow: hidden;
+}
 
 #modalContainer {
   position: relative;
@@ -467,6 +479,7 @@ form textarea {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  min-height: 700px;
   margin: 0;
   padding: 0 15%;
 }
@@ -531,4 +544,8 @@ form textarea {
 #deleteAllWorks {
   color: red;
   margin-bottom: 40px;
+}
+
+#deleteAllWorks:hover {
+  cursor: pointer;
 }

@@ -76,6 +76,73 @@
 			</ul>
 		</nav>
 	</footer>
+
+
+	<!-- *************************************************************************************************************** -->
+	<aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true" style="display:none">
+
+		<div id="modalContainer">
+
+			<i id="closeModal" class="fa-solid fa-xmark"></i>
+
+			<!-- GALERIE PHOTO -->
+			<section class="modalTemplate" id="modalEdit">
+
+
+				<div id="editionGallery">
+					<h2 id="modalTitle">Galerie photo</h2>
+					<!-- <i id="deleteIcon" class="fa-solid fa-trash-can iconModal"></i>
+					<i id="moveIcon" class="fa-solid fa-arrows-up-down-left-right iconModal"></i> -->
+					<div id="modalGrid">
+					</div>
+				</div>
+				<div id="footerModal">
+					<hr>
+					<input type="submit" value="Ajouter une photo">
+					<p id="deleteAllWorks">Supprimer la gallerie</p>
+				</div>
+			</section>
+
+			<!-- EDIT PHOTO
+					<section class="modalTemplate" id="modalEdit">
+	
+						<h3 class="modalTitle">Gallerie Photo</h3>
+						<div id="edition__gallery"></div>
+						<hr class="modale__hr">
+						<input class="modale__button" id="addpicture__button" type="button" value="Ajouter une photo">
+						<p id="delete__allworks" tabindex="0" onclick="modale.deleteAllWorks()">supprimer la gallerie</p>
+					</section> -->
+
+			<!-- Upload Body
+			<form class="modale__body modale__body__form modale__body--hidden" id="form__upload">
+				<h3 id="upload__title">Ajout Photo</h3>
+				<div id="addpic__container">
+					<img id="preview__file" alt="preview" src="./assets/icons/picture-placeholder.png">
+					<div id="inputfile__group">
+						<input type="file" id="filetoupload" name="image" accept="image/png, image/jpeg">
+						<label for="filetoupload" id="fileselect_button"
+							class="fileselect_button modale__button grey__bg--greentxt">+ Ajouter photo</label>
+					</div>
+					<p class="filesize">jpg, png : 4mo max</p>
+				</div>
+				<div id="uploadwork__errorbox" class="uploadwork__errorbox"></div>
+				<label for="title">Titre</label>
+				<input type="text" name="title" id="title" required>
+				<label for="category">Catégorie</label>
+				<select name="category" id="category">
+				</select>
+				<hr class="modale__hr">
+				<input class="modale__button grey__bg--whitetxt" type="submit" id="upload__submitbutton" value="Valider"
+					disabled>
+			</form> -->
+
+		</div>
+	</aside>
+
+
+
+
+
 </body>
 
 </html>

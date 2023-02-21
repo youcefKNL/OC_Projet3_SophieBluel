@@ -89,7 +89,7 @@ function cardsTemplate(card) {
   const cardDisplay = document.createElement("figure");
   // data set pour étape édition ds Modal
   cardDisplay.setAttribute("data-card-id", card.id);
-  console.log(cardDisplay);
+  //console.log(cardDisplay);
   // INJECTION DE MON IMAGE DS MA CARTE
 
   const imgCard = document.createElement("img");
@@ -154,11 +154,12 @@ function checkToken() {
 function removeToken() {
   // Supprime le token du localStorage
   localStorage.removeItem("token");
+  sessionStorage.removeItem("deletedImages");
 }
 
 //événement fermeture onglet ou redirection vers un autre site
 
-//window.addEventListener("unload", removeToken);
+window.addEventListener("unload", removeToken);
 
 // *****************************************************************************************************
 // ***************************************  ADMIN EDITOR  **********************************************
@@ -167,6 +168,7 @@ function removeToken() {
 //Injection Dom en Mode Admin
 
 function adminEdition() {
+  let deletedImages = {};
   //*************************************Créer le bandeau Admin Editor
   const flagEditor = document.createElement("div");
   flagEditor.classList.add("flagEditor");
@@ -205,6 +207,7 @@ function adminEdition() {
   spanTitleProject.classList.remove("projectRemove");
   spanTitleProject.setAttribute("id", "titleProjectRemove");
 
+  spanTitleProject.setAttribute("href", "#modal");
   // INJECTION  SPAN
 
   figure.appendChild(spanFigure);
@@ -212,37 +215,57 @@ function adminEdition() {
 
   //*************************************Login -> Logout
 
-  document.querySelector(
+  // Sélectionner l'élément <li> à modifier
+  const logout = document.querySelector(
     "body > header > nav > ul > li:nth-child(3)"
-  ).innerHTML = `
-    <a href="./index.html" onclick="removeToken(); window.location.assign('./index.html')">logout</a>
-  `;
+  );
+
+  // Créer un élément <a> pour le lien de déconnexion
+  const logoutLink = document.createElement("a");
+  logoutLink.href = "./index.html";
+
+  const logoutText = document.createTextNode("logout");
+  logoutLink.appendChild(logoutText);
+
+  logout.innerHTML = "";
+  logout.appendChild(logoutLink);
+
+  //  DECONEXion
+  logoutLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    removeToken();
+    window.location.assign("./index.html");
+  });
 
   //*************************************Delete les filtres de Recherche
   filterButtons.remove();
 
   //*************************************Open Modal
   const modalJs = document.getElementById("titleProjectRemove");
+  console.log(modalJs);
 
   modalJs.addEventListener("click", (e) => {
     e.preventDefault();
+    const target = document.querySelector(e.target.getAttribute("href"));
+    //console.log(target);
+    target.style.display = null;
+    displayModal();
     openModal();
   });
 
   async function openModal() {
-    const target = "./assets/modal.html";
-    const response = await fetch(target);
-    const html = await response.text();
-
-    // Récupérer les liens des images
+    //evitez les doublettes images Gallery
+    const galleryMapModal = document.getElementById("modalGrid");
+    galleryMapModal.innerHTML = "";
 
     //*************************************INJECTION DES ELEMENTS FETCHER
+    // Récupérer les liens des images
     // const imagesUrl = await cards.map((card) => card.imageUrl);
     const imagesUrl = [...document.querySelectorAll(".gallery img")].map(
       (img) => img.getAttribute("src")
     );
 
-    //console.log(imagesUrl);
+    console.log(imagesUrl);
 
     // Créer un Set pour n'avoir que des liens uniques
     const imagesUrlSet = new Set(imagesUrl);
@@ -250,10 +273,6 @@ function adminEdition() {
     //*************************************INJECTIONS DES CARTES DS MODAL
     const modal = document.createElement("div");
     modal.classList.add("modal");
-    modal.innerHTML = html;
-    // console.log(html);
-    document.body.appendChild(modal);
-    displayModal();
 
     const imageElements = [...imagesUrlSet].map((link, index) => {
       const container = document.createElement("figure");
@@ -265,6 +284,9 @@ function adminEdition() {
       container.setAttribute("data-card-id", cards[index].id);
       iconDelete.id = "deleteIcon";
       iconDelete.classList.add("fa-solid", "fa-trash-can", "iconModal");
+
+      iconDelete.setAttribute("aria-hidden", "true");
+
       img.src = link;
       img.alt = "";
       p.textContent = "éditer";
@@ -272,41 +294,8 @@ function adminEdition() {
       container.appendChild(p);
       container.appendChild(iconDelete);
 
-      iconDelete.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        const cardDelete = e.target.parentNode.getAttribute("data-card-id");
-        console.log(cardDelete);
-        deleteCard(cardDelete);
-      });
-      async function deleteCard(cardDelete) {
-        try {
-          if (token === false) return console.log({ error: "Pas connecté" });
-
-          const response = await fetch(`${api}works/${cardDelete}`, {
-            method: "DELETE",
-            headers: {
-              Accept: "*/*",
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (response.ok) {
-            // Supprimer la carte de la liste actuelle
-            // const cardElement = document.querySelector(
-            //   `[data-card-id="${cardDelete}"]`
-            // );
-            // if (cardElement) {
-            //   cardElement.remove();
-            //  }
-          } else {
-            throw new Error(response.statusText);
-          }
-        } catch (e) {
-          return `"Erreur= requête DELETE à l'API  :"${e}`;
-        }
-      }
-
       // Ajouter l'icône de déplacement uniquement sur le premier élément
+
       if (index === 0) {
         const iconMove = document.createElement("i");
         iconMove.id = "moveIcon";
@@ -318,6 +307,61 @@ function adminEdition() {
         container.appendChild(iconMove);
       }
 
+      //DELETE icone Corbeille
+      iconDelete.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const cardDelete = e.target.parentNode.getAttribute("data-card-id");
+        // console.log(cardDelete);
+        removeElement(cardDelete);
+        deletedImages[cardDelete] = true;
+
+        console.log(deletedImages);
+
+        // Convertir l'objet en chaîne de caractères JSON
+        const deletedImagesJSON = JSON.stringify(deletedImages);
+
+        // Stocker la chaîne dans sessionStorage
+        sessionStorage.setItem("deletedImages", deletedImagesJSON);
+      });
+
+      //FONCTION DELETE SUR LE DOM UNIQUEMENT:
+
+      function removeElement(cardDelete) {
+        container.remove(cardDelete);
+        // Supprimer l'élément correspondant de la galerie
+        const galleryImage = document.querySelector(
+          "#portfolio > div > figure:nth-child(1)"
+        );
+        // console.log(galleryImage);
+        galleryImage.remove(cardDelete);
+      }
+
+      //FONCTION DELETE ALL DU DOM DEPUIS MODAL
+      const deleteALL = document.querySelector("#deleteAllWorks");
+      deleteALL.addEventListener("click", () => {
+        const figureModals = document.querySelectorAll("#modalGrid figure");
+        const galleryModals = document.querySelectorAll("#portfolio figure");
+        const deletedImages =
+          JSON.parse(sessionStorage.getItem("deletedImages")) || {};
+        const imageIds = [];
+
+        figureModals.forEach((figure) => {
+          const dataCardId = figure.getAttribute("data-card-id");
+          imageIds.push(dataCardId);
+
+          // stocke l'ID deletedImages
+          deletedImages[dataCardId] = true;
+        });
+
+        // DELETE TOUTES LES CARTES
+
+        figureModals.forEach((figure) => figure.remove());
+        galleryModals.forEach((figure) => figure.remove());
+
+        // Stocke les ID SESSIONTORAGE
+        sessionStorage.setItem("deletedImages", JSON.stringify(deletedImages));
+      });
       return container;
     });
 
@@ -326,10 +370,58 @@ function adminEdition() {
   }
   // *****************************************************************************************************
 
+  const deleteWorksApi = document.querySelector("body > div > button");
+  console.log(deleteWorksApi);
+
+  //Confirmation DELETE CARTES dans L'API
+  deleteWorksApi.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Récupérer la chaîne de sessionStorage
+    const deletedImagesJSON = sessionStorage.getItem("deletedImages");
+
+    // Convertir la chaîne en objet JavaScript
+    const deletedImages = JSON.parse(deletedImagesJSON);
+
+    // Supprimer chaque image du SESSION STORAGE
+    //méthode JavaScript qui renvoie un tableau contenant les clés d'un objet
+    Object.keys(deletedImages).forEach(async (id) => {
+      try {
+        if (token === false) return console.log({ error: "Pas connecté" });
+
+        const response = await fetch(`${api}works/${id}`, {
+          method: "DELETE",
+          headers: {
+            Accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          console.log(`Image avec ID ${id} supprimée`);
+        } else {
+          throw new Error(response.statusText);
+        }
+      } catch (e) {
+        console.error(
+          `Erreur lors de la suppression de l'image avec ID ${id}: ${e}`
+        );
+      }
+    });
+  });
+
+  function disableScroll() {
+    document.body.classList.add("modalOpen");
+  }
+
+  function enableScroll() {
+    document.body.classList.remove("modalOpen");
+  }
+
   function displayModal() {
+    disableScroll();
     const modal = document.querySelector("#modal");
     const closeModalBtn = document.querySelector("#closeModal");
-    // console.log(closeModalBtn);
+    console.log(closeModalBtn);
     closeModalBtn.addEventListener("click", closeModal);
     window.addEventListener("click", (e) => {
       if (e.target === modal) {
@@ -337,10 +429,11 @@ function adminEdition() {
       }
     });
     function closeModal() {
-      const modal = document.querySelector(".modal");
+      const modal = document.getElementById("modal");
       modal.style.display = "none";
-      //Delete la div du DOM sinon un second apparait , le 1er se met en none
-      document.body.removeChild(modal);
+      enableScroll();
+      //Delete la div du DOM sinon un second apparait , le 1er se met en none Valable pour 1er test en AJAX:
+      //document.body.removeChild(modal);
     }
   }
 }
