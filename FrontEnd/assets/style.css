@@ -303,6 +303,17 @@ input[type="submit"] {
   border-radius: 60px;
   cursor: pointer;
 }
+input[type="button"] {
+  font-family: "Syne";
+  font-weight: 700;
+  color: white;
+  background-color: #1d6154;
+  margin: 2em auto;
+  width: 180px;
+  text-align: center;
+  border-radius: 60px;
+  cursor: pointer;
+}
 footer {
   background-color: white;
   height: 50px;
@@ -471,6 +482,16 @@ form textarea {
   right: 20px;
   font-size: 1.5em;
 }
+#previewModal {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.5em;
+}
+#previewModal:hover {
+  cursor: pointer;
+}
 #closeModal:hover {
   cursor: pointer;
 }
@@ -483,7 +504,7 @@ form textarea {
   margin: 0;
   padding: 0 15%;
 }
-#modalTitle {
+.modalTitle {
   color: black;
   text-align: center;
   padding-bottom: 40px;
@@ -531,12 +552,24 @@ form textarea {
 #moveIcon:hover {
   cursor: move;
 }
-#footerModal {
+.footerModal {
   margin-top: 20px;
   text-align: center;
   height: 30%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
-#footerModal > input {
+hr {
+  width: 100%;
+}
+.modalTemplate input[type="submit"] {
+  width: 60%;
+  text-align: center;
+  padding: 10px 45px;
+}
+.modalTemplate input[type="button"] {
   width: 60%;
   text-align: center;
   padding: 10px 45px;
@@ -548,4 +581,103 @@ form textarea {
 
 #deleteAllWorks:hover {
   cursor: pointer;
+}
+
+/* ************************ PAGE EDIT *************************** */
+
+#editSection {
+  align-items: center;
+}
+#editWorks {
+  height: 600px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+#addImageContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgb(232, 241, 246);
+  height: 40%;
+  width: 100%;
+  padding: 20px 0;
+  margin-bottom: 40px;
+}
+#addImageContainer img {
+  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+}
+#addImageContainer i {
+  font-size: 8em;
+  color: rgba(185, 197, 204);
+  z-index: 4000;
+}
+/* #inputFile {
+  display: flex;
+  flex-direction: column;
+  background: rgba(128, 128, 128, 0.308);
+  padding: 10px 20px;
+  border-radius: 20px;
+} */
+#errorImg {
+  text-align: center;
+  color: red;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+.fileLabel {
+  display: inline-block;
+  background-color: rgb(203, 214, 220);
+  padding: 10px 15px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.fileLabel span {
+  font-weight: bold;
+  color: rgb(87, 130, 155);
+}
+
+.file-input {
+  display: none;
+}
+
+#addTitle {
+  height: 15%;
+  width: 100%;
+}
+
+#addCategory {
+  height: 15%;
+  width: 100%;
+}
+
+.inputEdit {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.inputEdit label {
+  padding-bottom: 10px;
+  font-size: 16px;
+}
+.inputCss {
+  height: 30px;
+  border: 0px solid grey;
+  box-shadow: 8px 10px 23px 1px rgba(0, 0, 0, 0.34);
+  background-color: transparent;
+  outline: none;
+  padding: 0 20px;
+}
+.editFooter {
+  margin-top: 0;
+}
+#editWorks input[type="submit"] {
+  font-size: 18px;
+  background-color: rgb(167, 167, 167);
 }
