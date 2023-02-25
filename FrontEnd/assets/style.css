@@ -681,3 +681,9 @@ hr {
   font-size: 18px;
   background-color: rgb(167, 167, 167);
 }
+
+.errormsg {
+  text-align: center;
+  padding-top: 20px;
+  color: red;
+}

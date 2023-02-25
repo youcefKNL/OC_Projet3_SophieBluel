@@ -165,9 +165,11 @@ window.addEventListener("unload", removeToken);
 // ***************************************  ADMIN EDITOR  **********************************************
 // *****************************************************************************************************
 
-//Injection Dom en Mode Admin
-
 function adminEdition() {
+  // *****************************************************************************************************
+  //*************************************PARTIE SITE AVEC AJOUT DES ELTMTS EDITOR SUR DOM
+  // *****************************************************************************************************
+
   let deletedImages = {};
   //*************************************Créer le bandeau Admin Editor
   const flagEditor = document.createElement("div");
@@ -240,7 +242,10 @@ function adminEdition() {
   //*************************************Delete les filtres de Recherche
   filterButtons.remove();
 
-  //*************************************Open Modal
+  // *****************************************************************************************************
+  //*************************************OPEN 1ER MODAL EDIT SUPRESSION
+  // *****************************************************************************************************
+
   const modalJs = document.getElementById("titleProjectRemove");
   console.log(modalJs);
 
@@ -329,13 +334,11 @@ function adminEdition() {
       //FONCTION DELETE SUR LE DOM UNIQUEMENT:
 
       function removeElement(cardDelete) {
-        container.remove(cardDelete);
-        // Supprimer l'élément correspondant de la galerie
-        const galleryImage = document.querySelector(
-          "#portfolio > div > figure:nth-child(1)"
-        );
-        // console.log(galleryImage);
-        galleryImage.remove(cardDelete);
+        const card = document.querySelector(`[data-card-id="${cardDelete}"]`);
+        if (card && card.parentNode) {
+          card.parentNode.removeChild(card);
+          container.remove(card);
+        }
       }
 
       //FONCTION DELETE ALL DU DOM DEPUIS MODAL
@@ -370,7 +373,8 @@ function adminEdition() {
     const galleryMap = document.getElementById("modalGrid");
     galleryMap.append(...imageElements);
   }
-  // *****************************************************************************************************
+
+  //*************************************SUPRESSION DES TRAVAUX DE L'API
 
   const deleteWorksApi = document.querySelector("body > div > button");
   console.log(deleteWorksApi);
@@ -421,154 +425,210 @@ function adminEdition() {
 
   function displayModal() {
     disableScroll();
-
     const modal = document.querySelector("#modal");
     const closeModalBtn = document.querySelector("#closeModal");
     console.log(closeModalBtn);
     closeModalBtn.addEventListener("click", closeModal);
     window.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        closeModal();
+      if (e.target === modal) closeModal();
+    });
+  }
+  function closeModal() {
+    const categoryModalAddProject = document.querySelector("#category");
+    const editTitleModalAddProject = document.querySelector("#title");
+    const gallerySection = document.querySelector("#modalEdit");
+    const editSection = document.querySelector("#editSection");
+    const modal = document.getElementById("modal");
+    const previewModal = document.querySelector("#previewModal");
+    console.log(previewModal);
+
+    //***************Cache Modal */
+    modal.style.display = "none";
+    gallerySection.style.display = "";
+    previewModal.style.display = "none";
+    editSection.style.display = "none";
+
+    //**************Reset Modal Ajout travail */
+    editTitleModalAddProject.value = "";
+    categoryModalAddProject.value = "";
+    // viewImage.replaceWith(clonedViewImage);
+    //***************************** */
+    enableScroll();
+    //Delete la div du DOM sinon un second apparait , le 1er se met en none Valable pour 1er test en AJAX:
+    //document.body.removeChild(modal);
+  }
+
+  // *****************************************************************************************************
+  //*************************************MODAL AJOUT TRAVAUX
+  // *****************************************************************************************************
+
+  //AJOUTER UNE PHOTO
+  function editModal() {
+    const viewImage = document.getElementById("addImageContainer");
+
+    const addProject = document.getElementById("editModal");
+    const gallerySection = document.querySelector("#modalEdit");
+    const editSection = document.querySelector("#editSection");
+    const previewModal = document.querySelector("#previewModal");
+    const selectCategory = document.getElementById("category");
+    const inputFile = document.getElementById("filetoUpload");
+    const errorImg = document.getElementById("errorImg");
+    const addToApi = document.getElementById("editWorks");
+    const titleError = document.querySelector("#ErrorTitleSubmit");
+    const categoryError = document.querySelector("#ErrorCategorySubmit");
+    const submitForm = document.querySelector(
+      "#editWorks > div.footerModal.editFooter > input[type=submit]"
+    );
+    let iCanSubmit = false;
+    //console.log(previewModal);
+
+    //*************************************Cache - Cache differentes section Madale
+    addProject.addEventListener("click", () => {
+      gallerySection.style.display = "none";
+      editSection.style.display = "";
+      previewModal.style.display = "initial";
+    });
+    previewModal.addEventListener("click", () => {
+      gallerySection.style.display = "";
+      editSection.style.display = "none";
+      previewModal.style.display = "none";
+    });
+
+    //*************************************PARTIE IMG
+    inputFile.addEventListener("change", function () {
+      const file = inputFile.files[0];
+      // 4Mo en octets => Message ERROR
+      const maxSize = 4 * 1024 * 1024;
+
+      if (file.size > maxSize) {
+        errorImg.textContent = "Votre image est trop volumineuse";
+        console.log("fichier > 4MO!");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.addEventListener("load", function () {
+        viewImage.innerHTML = "";
+        const img = document.createElement("img");
+        img.setAttribute("src", reader.result);
+        viewImage.appendChild(img);
+        viewImage.style.padding = "0";
+      });
+
+      reader.readAsDataURL(file);
+    });
+    //*************************************AJOUT TITRE
+    // editTitle.addEventListener("input", () => {
+    //   editTitleProject = editTitle.value;
+    // });
+
+    //*************************************PARTIE CATEGORIE
+    const categories = new Set(cards.map((card) => card.category.name));
+
+    if (selectCategory.options.length === 0) {
+      const emptyOption = document.createElement("option");
+      emptyOption.value = "";
+      emptyOption.textContent = "";
+      selectCategory.appendChild(emptyOption);
+
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        selectCategory.appendChild(option);
+      });
+    }
+    //************************************* Condition Formulaire
+
+    editSection.addEventListener("input", () => {
+      const editTitle = document.querySelector("#title");
+      iCanSubmit = false;
+      submitForm.style.background = " grey";
+      let category = document.querySelector("#category").value;
+      const title = editTitle.value;
+      const image = inputFile.files[0];
+
+      if (image === null || image === undefined) {
+        errorImg.textContent = "Veuillez selectionnez une image";
+        imageSelected = false;
+      } else if (title.length < 3) {
+        titleError.textContent = "Ajoutez un titre";
+        titleSelected = false;
+      } else if (category === "") {
+        categoryError.textContent = "Choisissez une catégorie";
+        titleError.textContent = "";
+        categorySelected = false;
+      } else {
+        //submitForm.style.background = " #1d6154";
+        titleError.textContent = "";
+        categoryError.textContent = "";
+        categorySelected = true;
+        titleSelected = true;
+        imageSelected = true;
+
+        //iCanSubmit = true;
+      }
+      if (titleSelected && categorySelected && imageSelected) {
+        submitForm.style.background = " #1d6154";
+        iCanSubmit = true;
       }
     });
-    function closeModal() {
-      const gallerySection = document.querySelector("#modalEdit");
-      const editSection = document.querySelector("#editSection");
-      const modal = document.getElementById("modal");
-      const previewModal = document.querySelector("#previewModal");
-      console.log(previewModal);
-      modal.style.display = "none";
-      gallerySection.style.display = "";
-      previewModal.style.display = "none";
-      editSection.style.display = "none";
-      enableScroll();
-      //Delete la div du DOM sinon un second apparait , le 1er se met en none Valable pour 1er test en AJAX:
-      //document.body.removeChild(modal);
-    }
-  }
-}
 
-// *****************************************************************************************************
+    addToApi.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-//AJOUTER UNE PHOTO
-function editModal() {
-  const addProject = document.getElementById("editModal");
-  const gallerySection = document.querySelector("#modalEdit");
-  const editSection = document.querySelector("#editSection");
-  const previewModal = document.querySelector("#previewModal");
-  const viewImage = document.getElementById("addImageContainer");
-  const selectCategory = document.getElementById("category");
-  const inputFile = document.getElementById("filetoUpload");
-  const errorImg = document.getElementById("errorImg");
-  const addToApi = document.getElementById("editWorks");
-  //console.log(previewModal);
+      //console.log("test");
+      //*************************************Récupérer les valeurs INPUTs
+      if (iCanSubmit) {
+        const image = inputFile.files[0];
+        //const title = editTitleProject;
+        let category = document.querySelector("#category").value;
 
-  //PARTIE IMG
+        //Récupérer et donne le bon id input Category
 
-  addProject.addEventListener("click", () => {
-    gallerySection.style.display = "none";
-    editSection.style.display = "";
-    previewModal.style.display = "initial";
-  });
-  previewModal.addEventListener("click", () => {
-    gallerySection.style.display = "";
-    editSection.style.display = "none";
-    previewModal.style.display = "none";
-  });
-
-  inputFile.addEventListener("change", function () {
-    const file = inputFile.files[0];
-    // 4Mo en octets => Message ERROR
-    const maxSize = 4 * 1024 * 1024;
-
-    if (file.size > maxSize) {
-      errorImg.textContent = "Votre image est trop volumineuse";
-      console.log("fichier > 4MO!");
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.addEventListener("load", function () {
-      viewImage.innerHTML = "";
-      const img = document.createElement("img");
-      img.setAttribute("src", reader.result);
-      viewImage.appendChild(img);
-      viewImage.style.padding = "0";
-    });
-
-    reader.readAsDataURL(file);
-  });
-  // AJOUT TITRE
-  const editTitle = document.querySelector("#title");
-  editTitle.addEventListener("input", () => {
-    editTitleProject = editTitle.value;
-  });
-
-  //PARTIE CATEGORIE
-  const categories = new Set(cards.map((card) => card.category.name));
-
-  if (selectCategory.options.length === 0) {
-    const emptyOption = document.createElement("option");
-    emptyOption.value = "";
-    emptyOption.textContent = "";
-    selectCategory.appendChild(emptyOption);
-
-    categories.forEach((category) => {
-      const option = document.createElement("option");
-      option.value = category;
-      option.textContent = category;
-      selectCategory.appendChild(option);
-    });
-  }
-
-  addToApi.addEventListener("submit", (e) => {
-    e.preventDefault();
-    //console.log("test");
-
-    // Récupérer les valeurs INPUTs
-
-    const image = inputFile.files[0];
-    const title = editTitleProject;
-    let category = document.querySelector("#category").value;
-
-    //Récupérer et donne le bon id input Category
-
-    if (category === "Objets") {
-      category = 1;
-    } else if (category === "Appartements") {
-      category = 2;
-    } else if (category === "Hotels & restaurants") {
-      category = 3;
-    }
-
-    category = parseInt(category);
-
-    const formData = new FormData();
-
-    formData.append("image", image);
-    formData.append("title", title);
-    formData.append("category", category);
-
-    fetch(api + "works", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: formData,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Ta requête POST n'est pas passé :/ ");
+        if (category === "Objets") {
+          category = 1;
+        } else if (category === "Appartements") {
+          category = 2;
+        } else if (category === "Hotels & restaurants") {
+          category = 3;
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Ta requête POST est passé :) :", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  });
+
+        category = parseInt(category);
+
+        const formData = new FormData();
+
+        formData.append("image", image);
+        formData.append("title", title);
+        formData.append("category", category);
+
+        fetch(api + "works", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Ta requête POST n'est pas passé :/ ");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Ta requête POST est passé :) :", data);
+            fetchApiWorks();
+            workDisplay();
+            closeModal();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      } else {
+        console.log("Ta requête POST n'est PAS passé :( :", data);
+      }
+    });
+  }
 }
