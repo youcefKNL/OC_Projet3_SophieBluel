@@ -435,6 +435,7 @@ function adminEdition() {
   }
   function closeModal() {
     const categoryModalAddProject = document.querySelector("#category");
+    const viewImage = document.getElementById("addImageContainer");
     const editTitleModalAddProject = document.querySelector("#title");
     const gallerySection = document.querySelector("#modalEdit");
     const editSection = document.querySelector("#editSection");
@@ -451,6 +452,17 @@ function adminEdition() {
     //**************Reset Modal Ajout travail */
     editTitleModalAddProject.value = "";
     categoryModalAddProject.value = "";
+    viewImage.innerHTML = `						<i class="fa-solid fa-image"></i>
+
+    <div id="inputFile">
+      <label for="filetoUpload" class="fileLabel">
+        <span>+ Ajouter une photo</span>
+        <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg"
+          class="file-input">
+      </label>
+    </div>
+    <span class="filesize">jpg, png : 4mo max</span>
+    <span id="errorImg"></span>`;
     // viewImage.replaceWith(clonedViewImage);
     //***************************** */
     enableScroll();
