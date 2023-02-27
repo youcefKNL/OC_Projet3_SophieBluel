@@ -560,6 +560,7 @@ function adminEdition() {
       let category = document.querySelector("#category").value;
       const title = editTitle.value;
       const image = inputFile.files[0];
+      // console.log(typeof image);
 
       if (image === null || image === undefined) {
         errorImg.textContent = "Veuillez selectionnez une image";
@@ -594,7 +595,8 @@ function adminEdition() {
       //*************************************Récupérer les valeurs INPUTs
       if (iCanSubmit) {
         const image = inputFile.files[0];
-        //const title = editTitleProject;
+        //console.log(image);
+        const title = document.querySelector("#title").value;
         let category = document.querySelector("#category").value;
 
         //Récupérer et donne le bon id input Category
@@ -614,6 +616,7 @@ function adminEdition() {
         formData.append("image", image);
         formData.append("title", title);
         formData.append("category", category);
+        console.log(formData);
 
         fetch(api + "works", {
           method: "POST",
