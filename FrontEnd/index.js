@@ -556,6 +556,8 @@ function adminEdition() {
     editSection.addEventListener("input", () => {
       const editTitle = document.querySelector("#title");
       iCanSubmit = false;
+      titleSelected = false;
+      categorySelected = false;
       submitForm.style.background = " grey";
       let category = document.querySelector("#category").value;
       const title = editTitle.value;
@@ -589,6 +591,7 @@ function adminEdition() {
     });
 
     addToApi.addEventListener("submit", (e) => {
+      console.log("Formulaire soumis !");
       e.preventDefault();
 
       //console.log("test");
@@ -612,10 +615,10 @@ function adminEdition() {
         category = parseInt(category);
 
         const formData = new FormData();
-
         formData.append("image", image);
         formData.append("title", title);
         formData.append("category", category);
+        //submitForm.disabled = true;
         console.log(formData);
 
         fetch(api + "works", {
@@ -630,6 +633,7 @@ function adminEdition() {
             if (!response.ok) {
               throw new Error("Ta requête POST n'est pas passé :/ ");
             }
+
             return response.json();
           })
           .then((data) => {
@@ -637,6 +641,8 @@ function adminEdition() {
             fetchApiWorks();
             workDisplay();
             closeModal();
+            // réinitialiser le champ inputFile sinon il envoie plusieur formData en post
+            inputFile.value = "";
           })
           .catch((error) => {
             console.error("Error:", error);
