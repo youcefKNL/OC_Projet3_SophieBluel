@@ -238,6 +238,7 @@ function adminEdition() {
     removeToken();
     window.location.assign("./index.html");
   });
+  document.body.classList.add("marginTop");
 
   //*************************************Delete les filtres de Recherche
   filterButtons.remove();
@@ -245,15 +246,93 @@ function adminEdition() {
   // *****************************************************************************************************
   //*************************************OPEN 1ER MODAL EDIT SUPRESSION
   // *****************************************************************************************************
+  const modalHTML = () => {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
+      <aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true" display="initial">
+
+      <div id="modalContainer">
+  
+        <i id="closeModal" class="fa-solid fa-xmark"></i>
+        <i id="previewModal" class="fa-solid fa-arrow-left "></i>
+  
+        <!-- GALERIE PHOTO -->
+        <section class="modalTemplate" id="modalEdit">
+  
+  
+          <div id="editionGallery">
+            <h2 class="modalTitle">Galerie photo</h2>
+            <!-- <i id="deleteIcon" class="fa-solid fa-trash-can iconModal"></i>
+            <i id="moveIcon" class="fa-solid fa-arrows-up-down-left-right iconModal"></i> -->
+            <div id="modalGrid">
+            </div>
+          </div>
+          <div class="footerModal">
+            <hr>
+            <input type="submit" value="Ajouter une photo" id="editModal">
+            <p id="deleteAllWorks">Supprimer la gallerie</p>
+          </div>
+        </section>
+  
+  
+        <!-- EDIT PHOTO -->
+  
+        <section class="modalTemplate" id="editSection" style="display:none">
+  
+          <h2 class="modalTitle">Ajout photo</h2>
+  
+          <form id="editWorks">
+  
+            <div id="addImageContainer">
+              <i class="fa-solid fa-image"></i>
+  
+              <div id="inputFile">
+                <label for="filetoUpload" class="fileLabel">
+                  <span>+ Ajouter une photo</span>
+                  <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg"
+                    class="file-input">
+                </label>
+              </div>
+              <span class="filesize">jpg, png : 4mo max</span>
+              <span id="errorImg"></span>
+            </div>
+  
+            <div class="inputEdit" id="addTitle">
+              <label for="title">Titre</label>
+              <input type="text" name="title" id="title" class="inputCss" required>
+              <span id="ErrorTitleSubmit" class="errormsg"></span>
+            </div>
+  
+            <div class=" inputEdit" id="addCategory">
+              <label for="category">Catégorie</label>
+              <select name="category" id="category" class="inputCss"></select>
+              <span id="ErrorCategorySubmit" class="errormsg"></span>
+            </div>
+  
+            <div class="footerModal editFooter">
+              <hr>
+              <input type="submit" value="Valider">
+            </div>
+          </form>
+        </section>
+  
+      </div>
+    </aside>
+      `
+    );
+  };
 
   const modalJs = document.getElementById("titleProjectRemove");
   console.log(modalJs);
 
   modalJs.addEventListener("click", (e) => {
     e.preventDefault();
-    const target = document.querySelector(e.target.getAttribute("href"));
+    // const target = document.querySelector(e.target.getAttribute("href"));
     //console.log(target);
-    target.style.display = null;
+
+    modalHTML();
+
     displayModal();
     openModal();
     editModal();
@@ -444,25 +523,26 @@ function adminEdition() {
     console.log(previewModal);
 
     //***************Cache Modal */
-    modal.style.display = "none";
-    gallerySection.style.display = "";
-    previewModal.style.display = "none";
-    editSection.style.display = "none";
+    // modal.style.display = "none";
+    // gallerySection.style.display = "";
+    // previewModal.style.display = "none";
+    // editSection.style.display = "none";
+    modal.remove();
 
     //**************Reset Modal Ajout travail */
-    editTitleModalAddProject.value = "";
-    categoryModalAddProject.value = "";
-    viewImage.innerHTML = `						<i class="fa-solid fa-image"></i>
+    // editTitleModalAddProject.value = "";
+    // categoryModalAddProject.value = "";
+    // viewImage.innerHTML = `						<i class="fa-solid fa-image"></i>
 
-    <div id="inputFile">
-      <label for="filetoUpload" class="fileLabel">
-        <span>+ Ajouter une photo</span>
-        <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg"
-          class="file-input">
-      </label>
-    </div>
-    <span class="filesize">jpg, png : 4mo max</span>
-    <span id="errorImg"></span>`;
+    // <div id="inputFile">
+    //   <label for="filetoUpload" class="fileLabel">
+    //     <span>+ Ajouter une photo</span>
+    //     <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg"
+    //       class="file-input">
+    //   </label>
+    // </div>
+    // <span class="filesize">jpg, png : 4mo max</span>
+    // <span id="errorImg"></span>`;
     // viewImage.replaceWith(clonedViewImage);
     //***************************** */
     enableScroll();
