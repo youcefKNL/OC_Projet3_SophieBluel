@@ -1,41 +1,6 @@
 const api = "http://localhost:5678/api/";
 const token = localStorage.getItem("token");
 let categoryIdValue = "";
-//let cards = [];
-
-// *****************************************************************************************************
-// Fetcher api
-// Differentes routes:      /works    /categories    /users/login    /works/{id}
-// *****************************************************************************************************
-// Fetch la route Works
-//Fetch cards appartenant à WORKS
-
-async function fetchApiWorks() {
-  try {
-    await fetch(api + "works")
-      .then((res) => res.json())
-      .then((data) => (cards = data));
-    //Récupération dynamique de toutes les Catégories
-    function getButtonTitles(cards) {
-      return [...new Set(cards.map((card) => card.category.name))];
-    }
-    const btnTitle = getButtonTitles(cards);
-    console.log(btnTitle);
-
-    console.log(cards);
-
-    filtersBtn(btnTitle);
-    workDisplay();
-  } catch (error) {
-    console.log(
-      `Erreur chargement Fonction fetchApiWorks Cartes des Projets:  ${error}`
-    );
-  }
-}
-
-// *****************************************************************************************************
-//INJECTION BOUTON EN HTML   (#PORTFOLIO ->) DIV -> BUTTONS
-
 let btnTitle = [];
 const btnSort = document.querySelectorAll(".btn");
 const filterButtons = document.createElement("div");
@@ -43,6 +8,33 @@ const portfolioSection = document.querySelector("#portfolio");
 portfolioSection
   .querySelector("h2")
   .insertAdjacentElement("afterend", filterButtons);
+const imageUrls = [];
+// Differentes routes:      /works    /categories    /users/login    /works/{id}
+
+//*************************************FETCHER la route Works
+async function fetchApiWorks() {
+  try {
+    await fetch(api + "works")
+      .then((res) => res.json())
+      .then((data) => (cards = data));
+    const btnTitle = getButtonTitles(cards);
+    console.log(btnTitle);
+    console.log(cards);
+    filtersBtn(btnTitle);
+    workDisplay(cards);
+  } catch (error) {
+    console.log(
+      `Erreur chargement Fonction fetchApiWorks Cartes des Projets:  ${error}`
+    );
+  }
+}
+
+//*************************************Récupération dynamique de toutes les Catégories appellé dans le fetch
+function getButtonTitles(cards) {
+  return [...new Set(cards.map((card) => card.category.name))];
+}
+
+//*************************************CRÉATION & INJECTION BOUTON EN HTML
 
 function filtersBtn(btnTitle) {
   // Créer le bouton "Tous"
@@ -80,10 +72,7 @@ function filtersBtn(btnTitle) {
   });
 }
 
-// *****************************************************************************************************
-//CORRECTION M => CREATION CARTES WORKS
-
-const imageUrls = [];
+//************************************ CREATION CARTES WORKS
 
 function cardsTemplate(card) {
   const cardDisplay = document.createElement("figure");
@@ -107,8 +96,7 @@ function cardsTemplate(card) {
   // Retourner LES Cartes pour stockage
   return cardDisplay;
 }
-// *****************************************************************************************************
-// INJECTION DES CARTES DANS LE HTML
+//*************************************INJECTION DES CARTES DANS LE HTML
 
 function workDisplay() {
   const gallery = document.querySelector(".gallery");
@@ -124,20 +112,14 @@ function workDisplay() {
   });
 }
 
-// *****************************************************************************************************
-
-//LOGIQUE AU CHARGEMENT DE LA PAGE
-
+//*************************************LOGIQUE AU CHARGEMENT DE LA PAGE
 window.addEventListener("load", (e) => {
   fetchApiWorks();
   categoryIdValue = "Tous";
   checkToken();
 });
 
-// *****************************************************************************************************
-// *****************************************************************************************************
-//Coté ADMINISTRATOR!!!
-
+//*************************************Coté ADMINISTRATOR!!!
 function checkToken() {
   // Vérifie si le token est dans le localStorage
   const token = localStorage.getItem("token");
@@ -150,7 +132,6 @@ function checkToken() {
 }
 
 //LOG OUT!! a la fermeture onglet / redirection & Rechargement
-
 function removeToken() {
   // Supprime le token du localStorage
   localStorage.removeItem("token");
@@ -158,19 +139,39 @@ function removeToken() {
 }
 
 //événement fermeture onglet ou redirection vers un autre site
-
 window.addEventListener("unload", removeToken);
 
 // *****************************************************************************************************
-// ***************************************  ADMIN EDITOR  **********************************************
+// *****************************DOM QUI PASSE EN MODE ADMIN EDITOR  ************************************
 // *****************************************************************************************************
-
 function adminEdition() {
+  adminHTML();
+  // *****************************************************************************************************
+  //*************************************OPEN 1ER MODAL EDIT SUPRESSION
+  // *****************************************************************************************************
+  const modalJs = document.getElementById("titleProjectRemove");
+
+  modalJs.addEventListener("click", (e) => {
+    e.preventDefault();
+    modalHTML();
+    displayModal();
+    openModal();
+    editModal();
+  });
+  //*************************************SUPRESSION DES TRAVAUX DE L'API
+  const deleteWorksApi = document.querySelector("body > div > button");
+  //Confirmation DELETE CARTES dans L'API
+  deleteWorksApi.addEventListener("click", (e) => {
+    e.preventDefault();
+    functionDeleteWorksApi();
+  });
+}
+//*************************************AUTRE FONCTION DU MODE ADMIN
+const adminHTML = () => {
   // *****************************************************************************************************
   //*************************************PARTIE SITE AVEC AJOUT DES ELTMTS EDITOR SUR DOM
   // *****************************************************************************************************
 
-  let deletedImages = {};
   //*************************************Créer le bandeau Admin Editor
   const flagEditor = document.createElement("div");
   flagEditor.classList.add("flagEditor");
@@ -182,11 +183,11 @@ function adminEdition() {
   spanFlagEditor.classList.add("projectRemove");
   spanFlagEditor.textContent = "Mode édition";
 
-  //Créer Le SPAN avec le "i"
+  //*************************************Créer Le SPAN avec le "i"
   const iconFlagEditor = document.createElement("i");
   iconFlagEditor.className = "fa-regular fa-pen-to-square";
 
-  // Insérer l'élément i avant le texte de span
+  //*************************************Insérer l'élément i avant le texte de span
   spanFlagEditor.insertBefore(iconFlagEditor, spanFlagEditor.firstChild);
 
   const btnFlagEditor = document.createElement("button");
@@ -195,27 +196,27 @@ function adminEdition() {
   flagEditor.appendChild(spanFlagEditor);
   flagEditor.appendChild(btnFlagEditor);
 
-  //Pointage des position à injecter
+  //*************************************Pointage des position à injecter
   const figure = document.querySelector("#introduction figure");
   const titleProject = document.querySelector("#portfolio > h2");
 
-  //clonage du Span au dessus! true = Mm enfant aussi
-
+  //*************************************clonage du Span au dessus! true = Mm enfant aussi
+  //SPAN "Mode édition" en dessou de Sophie
   const spanFigure = spanFlagEditor.cloneNode(true);
   spanFigure.classList.remove("projectRemove");
   spanFigure.classList.add("figureRemove");
-
+  //SPAN "Mode édition" des Projets
   const spanTitleProject = spanFlagEditor.cloneNode(true);
   spanTitleProject.classList.remove("projectRemove");
   spanTitleProject.setAttribute("id", "titleProjectRemove");
 
-  spanTitleProject.setAttribute("href", "#modal");
-  // INJECTION  SPAN
-
+  //*************************************INJECTION  SPAN
   figure.appendChild(spanFigure);
   titleProject.appendChild(spanTitleProject);
 
-  //*************************************Login -> Logout
+  //*************************************
+  //************************************* Login -> Logout HTML
+  //*************************************
 
   // Sélectionner l'élément <li> à modifier
   const logout = document.querySelector(
@@ -238,498 +239,414 @@ function adminEdition() {
     removeToken();
     window.location.assign("./index.html");
   });
+
+  //*************************************Ajout class pour mieux intégrer le FlagEditor *fixed
   document.body.classList.add("marginTop");
 
-  //*************************************Delete les filtres de Recherche
+  //*************************************Delete les filtres de Recherche HTML
   filterButtons.remove();
+};
+function openModal() {
+  let deletedImages = {};
+  //evitez les doublettes images Gallery
+  document.getElementById("modalGrid").innerHTML = "";
 
-  // *****************************************************************************************************
-  //*************************************OPEN 1ER MODAL EDIT SUPRESSION
-  // *****************************************************************************************************
-  const modalHTML = () => {
-    document.body.insertAdjacentHTML(
-      "beforeend",
-      `
-      <aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true" display="initial">
+  //*************************************INJECTION DES ELEMENTS FETCHER
+  // Récupérer les liens des images
+  // méthode qui crée un nouveau tableau à partir d'un objet itérable.
+  const imagesUrl = [...document.querySelectorAll(".gallery img")].map((img) =>
+    img.getAttribute("src")
+  );
 
-      <div id="modalContainer">
-  
-        <i id="closeModal" class="fa-solid fa-xmark"></i>
-        <i id="previewModal" class="fa-solid fa-arrow-left "></i>
-  
-        <!-- GALERIE PHOTO -->
-        <section class="modalTemplate" id="modalEdit">
-  
-  
-          <div id="editionGallery">
-            <h2 class="modalTitle">Galerie photo</h2>
-            <!-- <i id="deleteIcon" class="fa-solid fa-trash-can iconModal"></i>
-            <i id="moveIcon" class="fa-solid fa-arrows-up-down-left-right iconModal"></i> -->
-            <div id="modalGrid">
-            </div>
-          </div>
-          <div class="footerModal">
-            <hr>
-            <input type="submit" value="Ajouter une photo" id="editModal">
-            <p id="deleteAllWorks">Supprimer la gallerie</p>
-          </div>
-        </section>
-  
-  
-        <!-- EDIT PHOTO -->
-  
-        <section class="modalTemplate" id="editSection" style="display:none">
-  
-          <h2 class="modalTitle">Ajout photo</h2>
-  
-          <form id="editWorks">
-  
-            <div id="addImageContainer">
-              <i class="fa-solid fa-image"></i>
-  
-              <div id="inputFile">
-                <label for="filetoUpload" class="fileLabel">
-                  <span>+ Ajouter une photo</span>
-                  <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg"
-                    class="file-input">
-                </label>
-              </div>
-              <span class="filesize">jpg, png : 4mo max</span>
-              <span id="errorImg"></span>
-            </div>
-  
-            <div class="inputEdit" id="addTitle">
-              <label for="title">Titre</label>
-              <input type="text" name="title" id="title" class="inputCss" required>
-              <span id="ErrorTitleSubmit" class="errormsg"></span>
-            </div>
-  
-            <div class=" inputEdit" id="addCategory">
-              <label for="category">Catégorie</label>
-              <select name="category" id="category" class="inputCss"></select>
-              <span id="ErrorCategorySubmit" class="errormsg"></span>
-            </div>
-  
-            <div class="footerModal editFooter">
-              <hr>
-              <input type="submit" value="Valider">
-            </div>
-          </form>
-        </section>
-  
-      </div>
-    </aside>
-      `
-    );
-  };
+  // Créer un Set pour n'avoir que des liens uniques
+  const imagesUrlSet = new Set(imagesUrl);
 
-  const modalJs = document.getElementById("titleProjectRemove");
-  console.log(modalJs);
+  //*************************************INJECTIONS DES CARTES DS MODAL
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
 
-  modalJs.addEventListener("click", (e) => {
-    e.preventDefault();
-    // const target = document.querySelector(e.target.getAttribute("href"));
-    //console.log(target);
+  const imageElements = [...imagesUrlSet].map((link, index) => {
+    const container = document.createElement("figure");
+    const img = document.createElement("img");
+    const p = document.createElement("p");
+    const iconDelete = document.createElement("i");
 
-    modalHTML();
+    // ajouter l'attribut data-card-id
+    container.setAttribute("data-card-id", cards[index].id);
+    iconDelete.id = "deleteIcon";
+    iconDelete.classList.add("fa-solid", "fa-trash-can", "iconModal");
+    iconDelete.setAttribute("aria-hidden", "true");
+    img.src = link;
+    p.textContent = "éditer";
+    container.appendChild(img);
+    container.appendChild(p);
+    container.appendChild(iconDelete);
 
-    displayModal();
-    openModal();
-    editModal();
-  });
+    // Ajouter l'icône de déplacement uniquement sur le premier élément
+    if (index === 0) {
+      const iconMove = document.createElement("i");
+      iconMove.id = "moveIcon";
+      iconMove.classList.add(
+        "fa-solid",
+        "fa-arrows-up-down-left-right",
+        "iconModal"
+      );
+      container.appendChild(iconMove);
+    }
 
-  async function openModal() {
-    //evitez les doublettes images Gallery
-    const galleryMapModal = document.getElementById("modalGrid");
-    galleryMapModal.innerHTML = "";
+    //DELETE icone Corbeille
+    iconDelete.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const cardDelete = e.target.parentNode.getAttribute("data-card-id");
+      removeElement(cardDelete);
+      deletedImages[cardDelete] = true;
+      console.log(deletedImages);
 
-    //*************************************INJECTION DES ELEMENTS FETCHER
-    // Récupérer les liens des images
-    // const imagesUrl = await cards.map((card) => card.imageUrl);
-    const imagesUrl = [...document.querySelectorAll(".gallery img")].map(
-      (img) => img.getAttribute("src")
-    );
+      // Convertir l'objet en chaîne de caractères JSON
+      const deletedImagesJSON = JSON.stringify(deletedImages);
+      // Stocker JSON dans sessionStorage
+      sessionStorage.setItem("deletedImages", deletedImagesJSON);
+    });
 
-    console.log(imagesUrl);
+    //FONCTION DELETE SUR LE DOM UNIQUEMENT appellé ds l evenement au click delete:
 
-    // Créer un Set pour n'avoir que des liens uniques
-    const imagesUrlSet = new Set(imagesUrl);
-
-    //*************************************INJECTIONS DES CARTES DS MODAL
-    const modal = document.createElement("div");
-    modal.classList.add("modal");
-
-    const imageElements = [...imagesUrlSet].map((link, index) => {
-      const container = document.createElement("figure");
-      const img = document.createElement("img");
-      const p = document.createElement("p");
-      const iconDelete = document.createElement("i");
-
-      // ajouter l'attribut data-card-id
-      container.setAttribute("data-card-id", cards[index].id);
-      iconDelete.id = "deleteIcon";
-      iconDelete.classList.add("fa-solid", "fa-trash-can", "iconModal");
-
-      iconDelete.setAttribute("aria-hidden", "true");
-
-      img.src = link;
-      img.alt = "";
-      p.textContent = "éditer";
-      container.appendChild(img);
-      container.appendChild(p);
-      container.appendChild(iconDelete);
-
-      // Ajouter l'icône de déplacement uniquement sur le premier élément
-
-      if (index === 0) {
-        const iconMove = document.createElement("i");
-        iconMove.id = "moveIcon";
-        iconMove.classList.add(
-          "fa-solid",
-          "fa-arrows-up-down-left-right",
-          "iconModal"
-        );
-        container.appendChild(iconMove);
+    function removeElement(cardDelete) {
+      const card = document.querySelector(`[data-card-id="${cardDelete}"]`);
+      if (card && card.parentNode) {
+        card.parentNode.removeChild(card);
+        container.remove(card);
       }
+    }
 
-      //DELETE icone Corbeille
-      iconDelete.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        const cardDelete = e.target.parentNode.getAttribute("data-card-id");
-        // console.log(cardDelete);
-        removeElement(cardDelete);
-        deletedImages[cardDelete] = true;
+    //FONCTION DELETE ALL DU DOM DEPUIS MODAL
+    const deleteALL = document.querySelector("#deleteAllWorks");
+    deleteALL.addEventListener("click", () => {
+      const figureModals = document.querySelectorAll("#modalGrid figure");
+      const galleryModals = document.querySelectorAll("#portfolio figure");
+      const deletedImages =
+        JSON.parse(sessionStorage.getItem("deletedImages")) || {};
+      const imageIds = [];
 
-        console.log(deletedImages);
-
-        // Convertir l'objet en chaîne de caractères JSON
-        const deletedImagesJSON = JSON.stringify(deletedImages);
-
-        // Stocker la chaîne dans sessionStorage
-        sessionStorage.setItem("deletedImages", deletedImagesJSON);
+      figureModals.forEach((figure) => {
+        const dataCardId = figure.getAttribute("data-card-id");
+        imageIds.push(dataCardId);
+        // stocke l'ID deletedImages
+        deletedImages[dataCardId] = true;
       });
 
-      //FONCTION DELETE SUR LE DOM UNIQUEMENT:
+      // DELETE TOUTES LES CARTES
+      figureModals.forEach((figure) => figure.remove());
+      galleryModals.forEach((figure) => figure.remove());
 
-      function removeElement(cardDelete) {
-        const card = document.querySelector(`[data-card-id="${cardDelete}"]`);
-        if (card && card.parentNode) {
-          card.parentNode.removeChild(card);
-          container.remove(card);
-        }
-      }
-
-      //FONCTION DELETE ALL DU DOM DEPUIS MODAL
-      const deleteALL = document.querySelector("#deleteAllWorks");
-      deleteALL.addEventListener("click", () => {
-        const figureModals = document.querySelectorAll("#modalGrid figure");
-        const galleryModals = document.querySelectorAll("#portfolio figure");
-        const deletedImages =
-          JSON.parse(sessionStorage.getItem("deletedImages")) || {};
-        const imageIds = [];
-
-        figureModals.forEach((figure) => {
-          const dataCardId = figure.getAttribute("data-card-id");
-          imageIds.push(dataCardId);
-
-          // stocke l'ID deletedImages
-          deletedImages[dataCardId] = true;
-        });
-
-        // DELETE TOUTES LES CARTES
-
-        figureModals.forEach((figure) => figure.remove());
-        galleryModals.forEach((figure) => figure.remove());
-
-        // Stocke les ID SESSIONTORAGE
-        sessionStorage.setItem("deletedImages", JSON.stringify(deletedImages));
-      });
-
-      return container;
+      // Stocke les ID SESSIONTORAGE
+      sessionStorage.setItem("deletedImages", JSON.stringify(deletedImages));
     });
-
-    const galleryMap = document.getElementById("modalGrid");
-    galleryMap.append(...imageElements);
-  }
-
-  //*************************************SUPRESSION DES TRAVAUX DE L'API
-
-  const deleteWorksApi = document.querySelector("body > div > button");
-  console.log(deleteWorksApi);
-
-  //Confirmation DELETE CARTES dans L'API
-  deleteWorksApi.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    // Récupérer la chaîne de sessionStorage
-    const deletedImagesJSON = sessionStorage.getItem("deletedImages");
-
-    // Convertir la chaîne en objet JavaScript
-    const deletedImages = JSON.parse(deletedImagesJSON);
-
-    // Supprimer chaque image du SESSION STORAGE
-    //méthode JavaScript qui renvoie un tableau contenant les clés d'un objet
-    Object.keys(deletedImages).forEach(async (id) => {
-      try {
-        if (token === false) return console.log({ error: "Pas connecté" });
-
-        const response = await fetch(`${api}works/${id}`, {
-          method: "DELETE",
-          headers: {
-            Accept: "*/*",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          console.log(`Image avec ID ${id} supprimée`);
-        } else {
-          throw new Error(response.statusText);
-        }
-      } catch (e) {
-        console.error(
-          `Erreur lors de la suppression de l'image avec ID ${id}: ${e}`
-        );
-      }
-    });
+    return container;
   });
 
-  function disableScroll() {
-    document.body.classList.add("modalOpen");
-  }
+  const galleryMap = document.getElementById("modalGrid");
+  galleryMap.append(...imageElements);
+}
+const functionDeleteWorksApi = () => {
+  // Récupérer la chaîne de sessionStorage
+  const deletedImagesJSON = sessionStorage.getItem("deletedImages");
+  // Convertir la chaîne en objet JavaScript
+  const deletedImages = JSON.parse(deletedImagesJSON);
+  // Supprimer chaque image du SESSION STORAGE
+  //méthode JavaScript qui renvoie un tableau contenant les clés d'un objet
+  Object.keys(deletedImages).forEach(async (id) => {
+    try {
+      if (token === false) return console.log({ error: "Pas connecté" });
 
-  function enableScroll() {
-    document.body.classList.remove("modalOpen");
-  }
+      const response = await fetch(`${api}works/${id}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "*/*",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        console.log(`Image avec ID ${id} supprimée`);
+      } else {
+        throw new Error(response.statusText);
+      }
+    } catch (e) {
+      console.error(
+        `Erreur lors de la suppression de l'image avec ID ${id}: ${e}`
+      );
+    }
+  });
+};
+// *****************************************************************************************************
+//**********************************  AFFICHAGE DE LA MODAL  *******************************************
+// *****************************************************************************************************
+function editModal() {
+  const addProject = document.getElementById("editModal");
+  const inputFile = document.getElementById("filetoUpload");
+  const selectCategory = document.getElementById("category");
+  const editSection = document.querySelector("#editSection");
+  const addToApi = document.getElementById("editWorks");
+  let iCanSubmit = false;
 
-  function displayModal() {
-    disableScroll();
-    const modal = document.querySelector("#modal");
-    const closeModalBtn = document.querySelector("#closeModal");
-    console.log(closeModalBtn);
-    closeModalBtn.addEventListener("click", closeModal);
-    window.addEventListener("click", (e) => {
-      if (e.target === modal) closeModal();
+  //*************************************Cache - Cache differentes section Madale
+  addProject.addEventListener("click", () => {
+    const gallerySection = document.querySelector("#modalEdit");
+    const previewModal = document.querySelector("#previewModal");
+    gallerySection.style.display = "none";
+    editSection.style.display = "";
+    previewModal.style.display = "initial";
+  });
+
+  previewModal.addEventListener("click", () => {
+    gallerySection.style.display = "";
+    editSection.style.display = "none";
+    previewModal.style.display = "none";
+  });
+
+  //*************************************PARTIE IMG
+  inputFile.addEventListener("change", addPicture);
+
+  //*************************************PARTIE CATEGORIE
+  const categories = new Set(cards.map((card) => card.category.name));
+
+  if (selectCategory.options.length === 0) {
+    const emptyOption = document.createElement("option");
+
+    emptyOption.value = "";
+    emptyOption.textContent = "";
+    selectCategory.appendChild(emptyOption);
+
+    categories.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category;
+      option.textContent = category;
+      selectCategory.appendChild(option);
     });
   }
-  function closeModal() {
-    const categoryModalAddProject = document.querySelector("#category");
-    const viewImage = document.getElementById("addImageContainer");
-    const editTitleModalAddProject = document.querySelector("#title");
-    const gallerySection = document.querySelector("#modalEdit");
-    const editSection = document.querySelector("#editSection");
-    const modal = document.getElementById("modal");
-    const previewModal = document.querySelector("#previewModal");
-    console.log(previewModal);
+  //************************************* Condition Formulaire POST
 
-    //***************Cache Modal */
-    // modal.style.display = "none";
-    // gallerySection.style.display = "";
-    // previewModal.style.display = "none";
-    // editSection.style.display = "none";
-    modal.remove();
-
-    //**************Reset Modal Ajout travail */
-    // editTitleModalAddProject.value = "";
-    // categoryModalAddProject.value = "";
-    // viewImage.innerHTML = `						<i class="fa-solid fa-image"></i>
-
-    // <div id="inputFile">
-    //   <label for="filetoUpload" class="fileLabel">
-    //     <span>+ Ajouter une photo</span>
-    //     <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg"
-    //       class="file-input">
-    //   </label>
-    // </div>
-    // <span class="filesize">jpg, png : 4mo max</span>
-    // <span id="errorImg"></span>`;
-    // viewImage.replaceWith(clonedViewImage);
-    //***************************** */
-    enableScroll();
-    //Delete la div du DOM sinon un second apparait , le 1er se met en none Valable pour 1er test en AJAX:
-    //document.body.removeChild(modal);
-  }
-
-  // *****************************************************************************************************
-  //*************************************MODAL AJOUT TRAVAUX
-  // *****************************************************************************************************
-
-  //AJOUTER UNE PHOTO
-  function editModal() {
-    const viewImage = document.getElementById("addImageContainer");
-
-    const addProject = document.getElementById("editModal");
-    const gallerySection = document.querySelector("#modalEdit");
-    const editSection = document.querySelector("#editSection");
-    const previewModal = document.querySelector("#previewModal");
-    const selectCategory = document.getElementById("category");
-    const inputFile = document.getElementById("filetoUpload");
+  editSection.addEventListener("input", () => {
+    const editTitle = document.querySelector("#title");
     const errorImg = document.getElementById("errorImg");
-    const addToApi = document.getElementById("editWorks");
     const titleError = document.querySelector("#ErrorTitleSubmit");
     const categoryError = document.querySelector("#ErrorCategorySubmit");
     const submitForm = document.querySelector(
       "#editWorks > div.footerModal.editFooter > input[type=submit]"
     );
-    let iCanSubmit = false;
-    //console.log(previewModal);
+    iCanSubmit = false;
+    titleSelected = false;
+    categorySelected = false;
+    submitForm.style.background = " grey";
+    let category = document.querySelector("#category").value;
+    const title = editTitle.value;
+    const image = inputFile.files[0];
+    // console.log(typeof image);
 
-    //*************************************Cache - Cache differentes section Madale
-    addProject.addEventListener("click", () => {
-      gallerySection.style.display = "none";
-      editSection.style.display = "";
-      previewModal.style.display = "initial";
-    });
-    previewModal.addEventListener("click", () => {
-      gallerySection.style.display = "";
-      editSection.style.display = "none";
-      previewModal.style.display = "none";
-    });
-
-    //*************************************PARTIE IMG
-    inputFile.addEventListener("change", function () {
-      const file = inputFile.files[0];
-      // 4Mo en octets => Message ERROR
-      const maxSize = 4 * 1024 * 1024;
-
-      if (file.size > maxSize) {
-        errorImg.textContent = "Votre image est trop volumineuse";
-        console.log("fichier > 4MO!");
-        return;
-      }
-
-      const reader = new FileReader();
-
-      reader.addEventListener("load", function () {
-        viewImage.innerHTML = "";
-        const img = document.createElement("img");
-        img.setAttribute("src", reader.result);
-        viewImage.appendChild(img);
-        viewImage.style.padding = "0";
-      });
-
-      reader.readAsDataURL(file);
-    });
-    //*************************************AJOUT TITRE
-    // editTitle.addEventListener("input", () => {
-    //   editTitleProject = editTitle.value;
-    // });
-
-    //*************************************PARTIE CATEGORIE
-    const categories = new Set(cards.map((card) => card.category.name));
-
-    if (selectCategory.options.length === 0) {
-      const emptyOption = document.createElement("option");
-      emptyOption.value = "";
-      emptyOption.textContent = "";
-      selectCategory.appendChild(emptyOption);
-
-      categories.forEach((category) => {
-        const option = document.createElement("option");
-        option.value = category;
-        option.textContent = category;
-        selectCategory.appendChild(option);
-      });
-    }
-    //************************************* Condition Formulaire
-
-    editSection.addEventListener("input", () => {
-      const editTitle = document.querySelector("#title");
-      iCanSubmit = false;
+    if (image === null || image === undefined) {
+      errorImg.textContent = "Veuillez selectionnez une image";
+      imageSelected = false;
+    } else if (title.length < 3) {
+      titleError.textContent = "Ajoutez un titre";
       titleSelected = false;
+    } else if (category === "") {
+      categoryError.textContent = "Choisissez une catégorie";
+      titleError.textContent = "";
       categorySelected = false;
-      submitForm.style.background = " grey";
-      let category = document.querySelector("#category").value;
-      const title = editTitle.value;
+    } else {
+      //submitForm.style.background = " #1d6154";
+      titleError.textContent = "";
+      categoryError.textContent = "";
+      categorySelected = true;
+      titleSelected = true;
+      imageSelected = true;
+
+      //iCanSubmit = true;
+    }
+    if (titleSelected && categorySelected && imageSelected) {
+      submitForm.style.background = " #1d6154";
+      iCanSubmit = true;
+    }
+  });
+
+  addToApi.addEventListener("submit", (e) => {
+    e.preventDefault();
+    //*************************************Récupérer les valeurs INPUTs
+    if (iCanSubmit) {
       const image = inputFile.files[0];
-      // console.log(typeof image);
+      //console.log(image);
+      const title = document.querySelector("#title").value;
+      let category = document.querySelector("#category").value;
 
-      if (image === null || image === undefined) {
-        errorImg.textContent = "Veuillez selectionnez une image";
-        imageSelected = false;
-      } else if (title.length < 3) {
-        titleError.textContent = "Ajoutez un titre";
-        titleSelected = false;
-      } else if (category === "") {
-        categoryError.textContent = "Choisissez une catégorie";
-        titleError.textContent = "";
-        categorySelected = false;
-      } else {
-        //submitForm.style.background = " #1d6154";
-        titleError.textContent = "";
-        categoryError.textContent = "";
-        categorySelected = true;
-        titleSelected = true;
-        imageSelected = true;
-
-        //iCanSubmit = true;
+      //Récupérer et donne le bon id input Category
+      if (category === "Objets") {
+        category = 1;
+      } else if (category === "Appartements") {
+        category = 2;
+      } else if (category === "Hotels & restaurants") {
+        category = 3;
       }
-      if (titleSelected && categorySelected && imageSelected) {
-        submitForm.style.background = " #1d6154";
-        iCanSubmit = true;
-      }
-    });
 
-    addToApi.addEventListener("submit", (e) => {
-      console.log("Formulaire soumis !");
-      e.preventDefault();
+      category = parseInt(category);
 
-      //console.log("test");
-      //*************************************Récupérer les valeurs INPUTs
-      if (iCanSubmit) {
-        const image = inputFile.files[0];
-        //console.log(image);
-        const title = document.querySelector("#title").value;
-        let category = document.querySelector("#category").value;
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("title", title);
+      formData.append("category", category);
+      //console.log(formData);
 
-        //Récupérer et donne le bon id input Category
-
-        if (category === "Objets") {
-          category = 1;
-        } else if (category === "Appartements") {
-          category = 2;
-        } else if (category === "Hotels & restaurants") {
-          category = 3;
-        }
-
-        category = parseInt(category);
-
-        const formData = new FormData();
-        formData.append("image", image);
-        formData.append("title", title);
-        formData.append("category", category);
-        //submitForm.disabled = true;
-        console.log(formData);
-
-        fetch(api + "works", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            Authorization: "Bearer " + token,
-          },
-          body: formData,
+      fetch(api + "works", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: formData,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Ta requête POST n'est pas passé :/ ");
+          }
+          return response.json();
         })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Ta requête POST n'est pas passé :/ ");
-            }
-
-            return response.json();
-          })
-          .then((data) => {
-            console.log("Ta requête POST est passé :) :", data);
-            fetchApiWorks();
-            workDisplay();
-            closeModal();
-            // réinitialiser le champ inputFile sinon il envoie plusieur formData en post
-            inputFile.value = "";
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
-      } else {
-        console.log("Ta requête POST n'est PAS passé :( :", data);
-      }
-    });
-  }
+        .then((data) => {
+          console.log("Ta requête POST est passé :) :", data);
+          fetchApiWorks();
+          workDisplay();
+          closeModal();
+          // réinitialiser le champ inputFile sinon il envoie plusieur formData en post
+          inputFile.value = "";
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          console.log("Ta requête POST n'est PAS passée :( ");
+        });
+    } else {
+      console.log("Formulaire invalide !!!");
+    }
+  });
 }
+
+//*************************************AUTRE FONCTION DE LA MODAL
+
+function disableScroll() {
+  document.body.classList.add("modalOpen");
+}
+
+function enableScroll() {
+  document.body.classList.remove("modalOpen");
+}
+
+function displayModal() {
+  const modal = document.querySelector("#modal");
+  const closeModalBtn = document.querySelector("#closeModal");
+  closeModalBtn.addEventListener("click", closeModal);
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+  disableScroll();
+}
+function closeModal() {
+  document.getElementById("modal").remove();
+  enableScroll();
+}
+const modalHTML = () => {
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `
+    <aside id="modal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true" display="initial">
+
+    <div id="modalContainer">
+
+      <i id="closeModal" class="fa-solid fa-xmark"></i>
+      <i id="previewModal" class="fa-solid fa-arrow-left "></i>
+
+      <!-- GALERIE PHOTO -->
+      <section class="modalTemplate" id="modalEdit">
+
+
+        <div id="editionGallery">
+          <h2 class="modalTitle">Galerie photo</h2>
+          <!-- <i id="deleteIcon" class="fa-solid fa-trash-can iconModal"></i>
+          <i id="moveIcon" class="fa-solid fa-arrows-up-down-left-right iconModal"></i> -->
+          <div id="modalGrid">
+          </div>
+        </div>
+        <div class="footerModal">
+          <hr>
+          <input type="submit" value="Ajouter une photo" id="editModal">
+          <p id="deleteAllWorks">Supprimer la gallerie</p>
+        </div>
+      </section>
+
+
+      <!-- EDIT PHOTO -->
+
+      <section class="modalTemplate" id="editSection" style="display:none">
+
+        <h2 class="modalTitle">Ajout photo</h2>
+
+        <form id="editWorks">
+
+          <div id="addImageContainer">
+            <i class="fa-solid fa-image"></i>
+
+            <div id="inputFile">
+              <label for="filetoUpload" class="fileLabel">
+                <span>+ Ajouter une photo</span>
+                <input type="file" id="filetoUpload" name="image" accept="image/png, image/jpeg"
+                  class="file-input">
+              </label>
+            </div>
+            <span class="filesize">jpg, png : 4mo max</span>
+            <span id="errorImg"></span>
+          </div>
+
+          <div class="inputEdit" id="addTitle">
+            <label for="title">Titre</label>
+            <input type="text" name="title" id="title" class="inputCss" required>
+            <span id="ErrorTitleSubmit" class="errormsg"></span>
+          </div>
+
+          <div class=" inputEdit" id="addCategory">
+            <label for="category">Catégorie</label>
+            <select name="category" id="category" class="inputCss"></select>
+            <span id="ErrorCategorySubmit" class="errormsg"></span>
+          </div>
+
+          <div class="footerModal editFooter">
+            <hr>
+            <input type="submit" value="Valider">
+          </div>
+        </form>
+      </section>
+
+    </div>
+  </aside>
+    `
+  );
+};
+const addPicture = () => {
+  const inputFile = document.getElementById("filetoUpload");
+  const viewImage = document.getElementById("addImageContainer");
+  const file = inputFile.files[0];
+  // 4Mo en octets => Message ERROR
+  const maxSize = 4 * 1024 * 1024;
+
+  if (file.size > maxSize) {
+    errorImg.textContent = "Votre image est trop volumineuse";
+    console.log("fichier > 4MO!");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.addEventListener("load", function () {
+    viewImage.innerHTML = "";
+    const img = document.createElement("img");
+    img.setAttribute("src", reader.result);
+    viewImage.appendChild(img);
+    viewImage.style.padding = "0";
+  });
+
+  reader.readAsDataURL(file);
+};

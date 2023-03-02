@@ -140,6 +140,7 @@ body {
   max-width: 1140px;
   font-family: "Work Sans";
   font-size: 14px;
+  background-color: rgb(255, 254, 248);
 }
 
 header {
@@ -227,6 +228,10 @@ li:hover {
 
 .gallery img {
   width: 100%;
+}
+figure img {
+  object-fit: cover;
+  height: 505.25px;
 }
 /* ********************************************************************* */
 .filter {
@@ -316,20 +321,24 @@ input[type="button"] {
 }
 footer {
   background-color: white;
+  position: absolute;
+  left: 0;
   height: 50px;
   width: 100%;
-}
-footer nav ul {
   display: flex;
   justify-content: flex-end;
-  margin: 2em;
+  align-items: center;
+}
+#footerLogin {
+  bottom: 0;
+}
+
+footer nav ul {
 }
 
 /* ********************************************************************* */
 /* ************************ PAGE LOGIN *************************** */
-.login {
-  height: 100vh;
-}
+
 .selectedMenu {
   font-weight: bold;
   cursor: not-allowed;
