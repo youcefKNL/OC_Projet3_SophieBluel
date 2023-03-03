@@ -225,13 +225,21 @@ li:hover {
   grid-row-gap: 20px;
   margin-top: 80px;
 }
-
+.gallery figure {
+  position: relative;
+  overflow: hidden;
+}
 .gallery img {
   width: 100%;
 }
-figure img {
+.gallery figure img {
   object-fit: cover;
+  object-position: center;
   height: 505.25px;
+  transition: transform 0.3s ease;
+}
+.gallery figure img:hover {
+  transform: scale(1.2);
 }
 /* ********************************************************************* */
 .filter {

@@ -386,12 +386,12 @@ function editModal() {
   const selectCategory = document.getElementById("category");
   const editSection = document.querySelector("#editSection");
   const addToApi = document.getElementById("editWorks");
+  const gallerySection = document.querySelector("#modalEdit");
+  const previewModal = document.querySelector("#previewModal");
   let iCanSubmit = false;
 
   //*************************************Cache - Cache differentes section Madale
   addProject.addEventListener("click", () => {
-    const gallerySection = document.querySelector("#modalEdit");
-    const previewModal = document.querySelector("#previewModal");
     gallerySection.style.display = "none";
     editSection.style.display = "";
     previewModal.style.display = "initial";
@@ -445,7 +445,7 @@ function editModal() {
     if (image === null || image === undefined) {
       errorImg.textContent = "Veuillez selectionnez une image";
       imageSelected = false;
-    } else if (title.length < 3) {
+    } else if (title.length < 1) {
       titleError.textContent = "Ajoutez un titre";
       titleSelected = false;
     } else if (category === "") {
