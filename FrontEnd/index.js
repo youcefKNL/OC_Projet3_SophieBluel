@@ -1,6 +1,7 @@
 const api = "http://localhost:5678/api/";
 const token = localStorage.getItem("token");
 let categoryIdValue = "";
+let categories = []; // Définir une variable globale pour stocker les données de l'API
 let btnTitle = [];
 const btnSort = document.querySelectorAll(".btn");
 const filterButtons = document.createElement("div");
@@ -18,10 +19,24 @@ async function fetchApiWorks() {
       .then((res) => res.json())
       .then((data) => (cards = data));
     const btnTitle = getButtonTitles(cards);
-    console.log(btnTitle);
+    console.log(`le titre des BTN filtres  : ${btnTitle.join("  /  ")}`);
     console.log(cards);
     filtersBtn(btnTitle);
     workDisplay(cards);
+  } catch (error) {
+    console.log(
+      `Erreur chargement Fonction fetchApiWorks Cartes des Projets:  ${error}`
+    );
+  }
+}
+
+//*************************************FETCHER la route Categories
+async function fetchApiCategories() {
+  try {
+    await fetch(api + "categories")
+      .then((res) => res.json())
+      .then((data) => (categories = data));
+    console.log(categories);
   } catch (error) {
     console.log(
       `Erreur chargement Fonction fetchApiWorks Cartes des Projets:  ${error}`
@@ -78,6 +93,7 @@ function cardsTemplate(card) {
   const cardDisplay = document.createElement("figure");
   // data set pour étape édition ds Modal
   cardDisplay.setAttribute("data-card-id", card.id);
+  cardDisplay.setAttribute("value", card.categoryId);
   //console.log(cardDisplay);
   // INJECTION DE MON IMAGE DS MA CARTE
 
@@ -115,6 +131,7 @@ function workDisplay() {
 //*************************************LOGIQUE AU CHARGEMENT DE LA PAGE
 window.addEventListener("load", (e) => {
   fetchApiWorks();
+  fetchApiCategories();
   categoryIdValue = "Tous";
   checkToken();
 });
@@ -125,13 +142,15 @@ function checkToken() {
   const token = localStorage.getItem("token");
   if (token) {
     //document.body.style.background = "red";
+    console.log("Token en mémoire! => Mode ADMIN activé ;)");
     adminEdition();
   } else {
+    console.log("Pas de token en mémoire! ;(");
     //document.body.style.background = "yellow";
   }
 }
 
-//LOG OUT!! a la fermeture onglet / redirection & Rechargement
+//LOG OUT!! a la fermeture onglet / redirection & Rechargement pour la sécurité
 function removeToken() {
   // Supprime le token du localStorage
   localStorage.removeItem("token");
@@ -407,19 +426,19 @@ function editModal() {
   inputFile.addEventListener("change", addPicture);
 
   //*************************************PARTIE CATEGORIE
-  const categories = new Set(cards.map((card) => card.category.name));
+
+  // Utiliser les données de l'API du 2e Fetch pour générer les options de l'élément select
 
   if (selectCategory.options.length === 0) {
     const emptyOption = document.createElement("option");
-
     emptyOption.value = "";
     emptyOption.textContent = "";
     selectCategory.appendChild(emptyOption);
 
     categories.forEach((category) => {
       const option = document.createElement("option");
-      option.value = category;
-      option.textContent = category;
+      option.textContent = category.name;
+      option.setAttribute("data-id", category.id);
       selectCategory.appendChild(option);
     });
   }
@@ -472,20 +491,16 @@ function editModal() {
     e.preventDefault();
     //*************************************Récupérer les valeurs INPUTs
     if (iCanSubmit) {
+      //Récupérer image
       const image = inputFile.files[0];
-      //console.log(image);
+
+      //Récupérer Titre
       const title = document.querySelector("#title").value;
-      let category = document.querySelector("#category").value;
 
-      //Récupérer et donne le bon id input Category
-      if (category === "Objets") {
-        category = 1;
-      } else if (category === "Appartements") {
-        category = 2;
-      } else if (category === "Hotels & restaurants") {
-        category = 3;
-      }
-
+      //Récupérer id du fetch Category depuis la liste
+      let categorySelect = document.querySelector("#category");
+      let selectedOption = categorySelect.selectedOptions[0];
+      let category = selectedOption.getAttribute("data-id");
       category = parseInt(category);
 
       const formData = new FormData();
@@ -609,7 +624,7 @@ const modalHTML = () => {
 
           <div class=" inputEdit" id="addCategory">
             <label for="category">Catégorie</label>
-            <select name="category" id="category" class="inputCss"></select>
+            <select name="category" id="category" data-id="" class="inputCss"></select>
             <span id="ErrorCategorySubmit" class="errormsg"></span>
           </div>
 
