@@ -1,6 +1,8 @@
 
 # youcefKNL-OC_Projet3_SophieBluel
 
+https://user-images.githubusercontent.com/121979440/226176829-20735c39-7c01-4679-a2be-c40ac021faa9.gif
+
 ![GitHub](https://badgen.net/badge/icon/github?icon=github&label)
 
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source-200x33.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
