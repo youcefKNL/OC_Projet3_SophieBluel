@@ -1,7 +1,8 @@
 
 # youcefKNL-OC_Projet3_SophieBluel
 
-https://user-images.githubusercontent.com/121979440/226176829-20735c39-7c01-4679-a2be-c40ac021faa9.gif
+![bloggif_641707289dd35](https://user-images.githubusercontent.com/121979440/226176971-0b9bd4ae-1f69-4d72-8b7f-1f1b4b788079.gif)
+
 
 ![GitHub](https://badgen.net/badge/icon/github?icon=github&label)
 
